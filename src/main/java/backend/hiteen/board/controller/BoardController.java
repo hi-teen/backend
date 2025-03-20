@@ -31,10 +31,10 @@ public class BoardController {
         List<BoardResponse> responses=boardService.getAllBoards();
         return ResponseEntity.ok(responses);
     }
-//
-//    @GetMapping("/{boardId}")
-//    public ResponseEntity<BoardResponse> getBoardById(@PathVariable Long boardId){
-//        BoardResponse boardResponse=boardService.getBoardById(boardId);
-//        return ResponseEntity.ok(boardResponse);
-//    }
+
+    @GetMapping("/{boardId}")
+    public ResponseEntity<BoardResponse> getBoardById(@PathVariable Long boardId){
+        BoardResponse boardResponse=boardService.getBoardById(boardId);
+        return ResponseEntity.ok(boardResponse);
+    }
 }
