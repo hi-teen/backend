@@ -26,15 +26,5 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping
-    public ResponseEntity<List<BoardResponse>> getAllBoards(){
-        List<BoardResponse> responses=boardService.getAllBoards();
-        return ResponseEntity.ok(responses);
-    }
 
-    @GetMapping("/{boardId}")
-    public ResponseEntity<BoardResponse> getBoardById(@PathVariable Long boardId){
-        BoardResponse boardResponse=boardService.getBoardById(boardId);
-        return ResponseEntity.ok(boardResponse);
-    }
 }

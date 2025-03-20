@@ -33,22 +33,5 @@ public class BoardService {
         return new BoardResponse(board);
     }
 
-    //게시글 전체 조회 - 모든 사용자에 대한
-    @Transactional(readOnly = true)
-    public List<BoardResponse> getAllBoards(){
-        List<Board> boards =boardRepository.findAll();
-        return boards.stream().map(BoardResponse::new)
-                .collect(Collectors.toList());
-
-    }
-
-
-    //게시글 단일 조회 - 모든 사용자에 대한
-    @Transactional(readOnly=true)
-    public BoardResponse getBoardById(Long boardId){
-        Board board=boardRepository.findById(boardId)
-                .orElseThrow(()->new IllegalArgumentException("게시글이 존재하지 않습니다."));
-        return new BoardResponse(board);
-    }
 
 }
