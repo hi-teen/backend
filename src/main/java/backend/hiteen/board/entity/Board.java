@@ -27,10 +27,14 @@ public class Board {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public Board(Member member, String title, String content){
+    private Board(Member member, String title, String content){
         this.member=member;
         this.title=title;
         this.content=content;
+    }
+
+    public static Board create(Member member, String title, String content){
+        return new Board(member,title,content);
     }
 
 }

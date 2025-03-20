@@ -10,6 +10,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class BoardService {
@@ -22,7 +24,10 @@ public class BoardService {
     public BoardResponse createBoard(final BoardCreateRequest request){
         Member member=memberRepository.findById(request.getMemberId())
                 .orElseThrow(()->new IllegalArgumentException("존재하지 않는 회원입니다."));
-        Board board=boardRepository.save(request.toEntity(member));
+
+        Board board=Board.create(member,request.getTitle(),request.getContent());
+        boardRepository.save(board);
         return new BoardResponse(board);
     }
+
 }
