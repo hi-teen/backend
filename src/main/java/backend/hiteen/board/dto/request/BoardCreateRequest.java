@@ -19,10 +19,6 @@ public class BoardCreateRequest {
     private String content;
 
 
-    public Board toEntity(Member member){
-        return new Board(member,title, content);
-    }
-
 }
 
 
