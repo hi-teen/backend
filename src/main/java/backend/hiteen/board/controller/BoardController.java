@@ -4,6 +4,7 @@ package backend.hiteen.board.controller;
 import backend.hiteen.board.dto.request.BoardCreateRequest;
 import backend.hiteen.board.dto.response.BoardResponse;
 import backend.hiteen.board.service.BoardService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,8 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/board")
+@RequestMapping("/boards")
+@Tag(name = "Board", description = "게시글 API")
 public class BoardController {
 
     private final BoardService boardService;
