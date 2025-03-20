@@ -24,7 +24,8 @@ public class BoardService {
     @Transactional
     public BoardResponse createBoard(final BoardCreateRequest request){
         Member member=memberRepository.findById(request.getMemberId())
-                .orElseThrow(()->new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElse(null);
+//        Throw(()->new IllegalArgumentException("존재하지 않는 회원입니다."));
 
         Board board=Board.create(member,request.getTitle(),request.getContent());
         boardRepository.save(board);

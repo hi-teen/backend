@@ -15,17 +15,16 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1")
+@RequestMapping("api/v1/board")
 public class BoardController {
 
     private final BoardService boardService;
 
-    @PostMapping("/board")
+    @PostMapping
     public ResponseEntity<BoardResponse> createBoard(@Valid @RequestBody BoardCreateRequest request){
         BoardResponse response=boardService.createBoard(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-
     @GetMapping
     public ResponseEntity<List<BoardResponse>> getAllBoards(){
         List<BoardResponse> responses=boardService.getAllBoards();
