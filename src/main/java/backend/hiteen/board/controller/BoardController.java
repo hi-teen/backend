@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,5 +42,11 @@ public class BoardController {
     public ResponseEntity<List<BoardResponse>> getAllMyBoards(@PathVariable Long memberId){
         List<BoardResponse> responses=boardService.getMyBoards(memberId);
         return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/member/{memberId}/board/{boardId}")
+    public ResponseEntity<BoardResponse> getMyBoardDetail(@PathVariable Long memberId, @PathVariable Long boardId){
+        BoardResponse boardResponse=boardService.getMyBoardDetail(memberId, boardId);
+        return ResponseEntity.ok(boardResponse);
     }
 }
