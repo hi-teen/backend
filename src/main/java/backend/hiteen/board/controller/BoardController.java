@@ -15,17 +15,17 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/board")
+@RequestMapping("api/v1")
 public class BoardController {
 
     private final BoardService boardService;
 
-    @PostMapping
+    @PostMapping("/board")
     public ResponseEntity<BoardResponse> createBoard(@Valid @RequestBody BoardCreateRequest request){
         BoardResponse response=boardService.createBoard(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-    @GetMapping
+    @GetMapping("/board")
     public ResponseEntity<List<BoardResponse>> getAllBoards(){
         List<BoardResponse> responses=boardService.getAllBoards();
         return ResponseEntity.ok(responses);
@@ -35,5 +35,11 @@ public class BoardController {
     public ResponseEntity<BoardResponse> getBoardById(@PathVariable Long boardId){
         BoardResponse boardResponse=boardService.getBoardById(boardId);
         return ResponseEntity.ok(boardResponse);
+    }
+
+    @GetMapping("/member/{memberId}/board")
+    public ResponseEntity<List<BoardResponse>> getAllMyBoards(@PathVariable Long memberId){
+        List<BoardResponse> responses=boardService.getMyBoards(memberId);
+        return ResponseEntity.ok(responses);
     }
 }
