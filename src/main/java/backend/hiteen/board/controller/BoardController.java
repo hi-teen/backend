@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1")
+@RequestMapping
 @Tag(name = "Board", description = "게시글 API")
 public class BoardController {
 
@@ -34,7 +34,7 @@ public class BoardController {
         return ResponseEntity.ok(responses);
     }
 
-    @GetMapping("/{boardId}")
+    @GetMapping("/board/{boardId}")
     public ResponseEntity<BoardResponse> getBoardById(@PathVariable Long boardId){
         BoardResponse boardResponse=boardService.getBoardById(boardId);
         return ResponseEntity.ok(boardResponse);
