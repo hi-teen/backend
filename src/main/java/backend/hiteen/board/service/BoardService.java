@@ -41,12 +41,26 @@ public class BoardService {
 
     }
 
-
     //게시글 단일 조회 - 모든 사용자에 대한
     @Transactional(readOnly=true)
     public BoardResponse getBoardById(Long boardId){
         Board board=boardRepository.findById(boardId)
                 .orElseThrow(()->new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        return new BoardResponse(board);
+    }
+
+    //게시글 전체 조회 - 내가 작성한
+    @Transactional(readOnly = true)
+    public List<BoardResponse> getMyBoards(Long memberId){
+        List<Board> boards=boardRepository.findAllByMemberId(memberId);
+        return boards.stream().map(BoardResponse::new).collect(Collectors.toList());
+    }
+
+    //게시글 단일 조회 - 내가 작성한
+    @Transactional(readOnly = true)
+    public BoardResponse getMyBoardDetail(Long memberId, Long boardId){
+        Board board=boardRepository.findByMemberIdAndId(memberId, boardId)
+                .orElseThrow(()-> new IllegalArgumentException("해당하는 게시글이 존재하지 않습니다."));
         return new BoardResponse(board);
     }
 
