@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -19,6 +21,14 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "board_id")
     private Board board;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Comment parentComment;
+
+    // 대댓글
+    @OneToMany(mappedBy = "parentComment", orphanRemoval = true)
+    private List<Comment> childrenComment = new ArrayList<>();
 
     private String content;
 

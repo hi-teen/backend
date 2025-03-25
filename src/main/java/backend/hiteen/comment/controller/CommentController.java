@@ -1,6 +1,7 @@
 package backend.hiteen.comment.controller;
 
 import backend.hiteen.comment.dto.request.CommentRequestDto;
+import backend.hiteen.comment.dto.request.ReplyCommentRequestDto;
 import backend.hiteen.comment.dto.response.CommentResponseDto;
 import backend.hiteen.comment.service.CommentService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,4 +25,14 @@ public class CommentController {
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @PostMapping("/{commentId}/replies")
+    public ResponseEntity<CommentResponseDto> addReplyComment(
+            @PathVariable Long commentId,
+            @RequestBody ReplyCommentRequestDto request) {
+        commentService.addReplyComment(commentId, request);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
 }
