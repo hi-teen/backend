@@ -2,6 +2,7 @@ package backend.hiteen.board.entity;
 
 import backend.hiteen.love.entity.Love;
 import backend.hiteen.member.entity.Member;
+import backend.hiteen.scrap.entity.Scrap;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,9 @@ public class Board {
     @Column
     private int loveCount;
 
+    @Column
+    private int scrapCount;
+
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
@@ -36,12 +40,16 @@ public class Board {
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Love> loves;
 
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Scrap> scraps;
+
 
     private Board(Member member, String title, String content){
         this.member=member;
         this.title=title;
         this.content=content;
         this.loveCount=0;
+        this.scrapCount=0;
     }
 
     public static Board create(Member member, String title, String content){
@@ -54,6 +62,14 @@ public class Board {
 
     public void decreaseLoveCount(){
         this.loveCount-=1;
+    }
+
+    public void increaseScrapCount(){
+        this.scrapCount+=1;
+    }
+
+    public void decreaseScrapCount(){
+        this.scrapCount-=1;
     }
 
 }
