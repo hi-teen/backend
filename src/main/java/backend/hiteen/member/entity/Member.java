@@ -2,6 +2,7 @@ package backend.hiteen.member.entity;
 
 import backend.hiteen.board.entity.Board;
 import backend.hiteen.love.entity.Love;
+import backend.hiteen.scrap.entity.Scrap;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -18,4 +19,7 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private  List<Love> loves;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Scrap> scraps;
 }
