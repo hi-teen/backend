@@ -71,4 +71,11 @@ public class BoardService {
         return boards.stream().map(BoardResponse::new).collect(Collectors.toList());
     }
 
+    //내가 스크랩한 게시글 전체 조회
+    @Transactional(readOnly = true)
+    public List<BoardResponse> getMyScrapedBoard(Long memberId){
+        List<Board> boards=boardRepository.findScrapedBoardByMemberId(memberId);
+        return boards.stream().map(BoardResponse::new).collect(Collectors.toList());
+    }
+
 }
