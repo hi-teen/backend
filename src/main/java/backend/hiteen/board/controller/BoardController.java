@@ -56,4 +56,11 @@ public class BoardController {
         BoardResponse boardResponse=boardService.getMyBoardDetail(memberId, boardId);
         return ResponseEntity.ok(boardResponse);
     }
+
+    @GetMapping("/member/{memberId}/board/love")
+    @Operation(summary = "내가 좋아요 한 게시글 전체 조회", description ="사용자가 좋아요 한 게시글을 모두 조회합니다.")
+    public ResponseEntity<List<BoardResponse>> getMyLovedBoards(@PathVariable Long memberId){
+        List<BoardResponse> responses=boardService.getMyLovedBoard(memberId);
+        return ResponseEntity.ok(responses);
+    }
 }
