@@ -58,9 +58,16 @@ public class BoardController {
     }
 
     @GetMapping("/member/{memberId}/board/love")
-    @Operation(summary = "내가 좋아요 한 게시글 전체 조회", description ="사용자가 좋아요 한 게시글을 모두 조회합니다.")
+    @Operation(summary = "내가 좋아요 한 게시글 전체 조회", description ="사용자가 좋아요 한 게시글을 전체 조회합니다.")
     public ResponseEntity<List<BoardResponse>> getMyLovedBoards(@PathVariable Long memberId){
         List<BoardResponse> responses=boardService.getMyLovedBoard(memberId);
+        return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("member/{memberId}/board/scrap")
+    @Operation(summary = "내가 스크랩 한 게시글 전체 조회", description ="사용자가 스크랩 한 게시글을 전체 조회합니다.")
+    public ResponseEntity<List<BoardResponse>> getMyScrapedBoards(@PathVariable Long memberId){
+        List<BoardResponse> responses=boardService.getMyScrapedBoard(memberId);
         return ResponseEntity.ok(responses);
     }
 }

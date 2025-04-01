@@ -14,4 +14,7 @@ public interface BoardRepository extends JpaRepository<Board,Long> {
     @Query("SELECT b FROM Board b JOIN b.loves l WHERE l.member.id=:memberId")
     List<Board> findLikedBoardByMemberId(Long memberId);
 
+    @Query("SELECT b FROM Board b JOIN b.scraps s where s.member.id=:memberId")
+    List<Board> findScrapedBoardByMemberId(Long memberId);
+
 }
