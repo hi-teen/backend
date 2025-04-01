@@ -3,11 +3,15 @@ import backend.hiteen.board.entity.Board;
 import backend.hiteen.board.repository.BoardRepository;
 import backend.hiteen.comment.dto.request.CommentRequestDto;
 import backend.hiteen.comment.dto.request.ReplyCommentRequestDto;
+import backend.hiteen.comment.dto.response.CommentResponseDto;
+import backend.hiteen.comment.dto.response.ReplyCommentResponseDto;
 import backend.hiteen.comment.entity.Comment;
 import backend.hiteen.comment.repository.CommentRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -56,6 +60,36 @@ public class CommentService {
         Integer maxAnonNumber = commentRepository.findMaxAnonymousNumberByBoardId(board.getId());
         return (maxAnonNumber == null) ? 1 : maxAnonNumber +1;
     }
+
+
+    @Transactional(readOnly = true)
+    public List<CommentResponseDto> getComments(Long boardId) {
+        if (!boardRepository.existsById(boardId)) {
+            throw new RuntimeException("게시글이 존재하지 않습니다.");
+        }
+
+        List<Comment> topLevelComments = commentRepository.findRootsByBoardId(boardId);
+
+        return topLevelComments.stream()
+                .map(this::covertToDto)
+                .toList();
+    }
+
+    private CommentResponseDto covertToDto(Comment comment) {
+        List<ReplyCommentResponseDto> replies = comment.getChildrenComment().stream()
+                .map(child -> new ReplyCommentResponseDto(
+                        child.getId(),
+                        child.getContent(),
+                        child.getAnonymousNumber()))
+                .toList();
+
+        return new CommentResponseDto(
+                comment.getId(),
+                comment.getContent(),
+                comment.getAnonymousNumber(),
+                replies);
+    }
+
 
     }
 

@@ -27,6 +27,7 @@ public class Comment {
     private Comment parentComment;
 
     // 대댓글
+    @Builder.Default
     @OneToMany(mappedBy = "parentComment", orphanRemoval = true)
     private List<Comment> childrenComment = new ArrayList<>();
 
