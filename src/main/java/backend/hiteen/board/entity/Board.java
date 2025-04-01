@@ -1,5 +1,6 @@
 package backend.hiteen.board.entity;
 
+import backend.hiteen.global.BaseTimeEntity;
 import backend.hiteen.love.entity.Love;
 import backend.hiteen.member.entity.Member;
 import backend.hiteen.scrap.entity.Scrap;
@@ -14,7 +15,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
-public class Board {
+public class Board extends BaseTimeEntity {
 
     @Id
     @Column(name = "board_id")
@@ -32,6 +33,8 @@ public class Board {
 
     @Column
     private int scrapCount;
+
+
 
     @ManyToOne
     @JoinColumn(name = "member_id")
