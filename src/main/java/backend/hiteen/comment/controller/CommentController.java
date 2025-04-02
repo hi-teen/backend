@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping
+@RequestMapping("/comments")
 @RequiredArgsConstructor
 @Tag(name = "Comment", description = "댓글 API")
 public class CommentController {
 
     private final CommentService commentService;
 
-    @PostMapping("/comments")
+    @PostMapping
     public ResponseEntity<CommentResponseDto> addComment(
             @RequestBody CommentRequestDto request) {
         commentService.addComment(request);
@@ -28,7 +28,7 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("comments/{commentId}/replies")
+    @PostMapping("/{commentId}/replies")
     public ResponseEntity<CommentResponseDto> addReplyComment(
             @PathVariable Long commentId,
             @RequestBody ReplyCommentRequestDto request) {
@@ -37,7 +37,7 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/board/{boardId}/comments")
+    @GetMapping("/board/{boardId}")
     public ResponseEntity<List<CommentResponseDto>> getComments(@PathVariable Long boardId) {
         List<CommentResponseDto> comments = commentService.getComments(boardId);
         return ResponseEntity.ok(comments);
