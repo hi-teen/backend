@@ -4,10 +4,12 @@ import backend.hiteen.board.entity.Board;
 import backend.hiteen.love.entity.Love;
 import backend.hiteen.scrap.entity.Scrap;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.util.List;
 
 @Entity
+@Getter
 public class Member {
 
     @Id

@@ -1,6 +1,7 @@
 package backend.hiteen.message.entity;
 
 
+import backend.hiteen.board.entity.Board;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,20 +12,21 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Message {
-
+@Builder
+public class MessageRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "message_room_id", nullable = false)
-    private MessageRoom messageRoom;
+    @JoinColumn(name = "board_id", nullable = false)
+    private Board board;
 
     private Long senderId;
-    private String content;
+
+    private Long receiverId;
+
     private LocalDateTime createdAt;
 }
