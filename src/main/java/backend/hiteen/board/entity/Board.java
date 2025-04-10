@@ -34,8 +34,6 @@ public class Board extends BaseTimeEntity {
     @Column
     private int scrapCount;
 
-
-
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
