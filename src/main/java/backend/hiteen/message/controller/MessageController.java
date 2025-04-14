@@ -2,6 +2,7 @@ package backend.hiteen.message.controller;
 
 import backend.hiteen.message.entity.Message;
 import backend.hiteen.message.service.MessageService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class MessageController {
     private final MessageService messageService;
 
     @PostMapping("/send")
+    @Operation(summary = "쪽지 보내기", description = "쪽지를 보냅니다.")
     public ResponseEntity<MessageResponse> sendMessage(@RequestBody MessageRequest request) {
         Message message = messageService.sendMessage(
                 request.getBoardId(),
@@ -36,6 +38,7 @@ public class MessageController {
     }
 
     @PostMapping("/room/{roomId}/send")
+    @Operation(summary = "쪽지방 내 메세지 전송", description = "기존 쪽지방에 쪽지를 보냅니다.")
     public ResponseEntity<MessageResponse> sendMessageInRoom(@PathVariable Long roomId,
                                                              @RequestBody RoomMessageRequest request) {
         Message message = messageService.sendMessageInRoom(
@@ -49,6 +52,7 @@ public class MessageController {
     }
 
     @GetMapping("/room/{roomId}")
+    @Operation(summary = "쪽지방 메시지 조회", description = "특정 쪽지방의 전체 메시지를 조회합니다.")
     public ResponseEntity<List<MessageResponse>> getMessages(@PathVariable Long roomId) {
         List<Message> messages = messageService.getMessages(roomId);
         List<MessageResponse> responseList = messages.stream()
@@ -59,6 +63,7 @@ public class MessageController {
     }
 
     @GetMapping("/room/{roomId}/poll")
+    @Operation(summary = "롱폴링 메시지 수신", description = "새 메시지가 올 때까지 대기하여 전달합니다.")
     public DeferredResult<ResponseEntity<List<MessageResponse>>> pollMessages(
             @PathVariable Long roomId,
             @RequestParam(defaultValue = "0") Long lastMessageId) {
