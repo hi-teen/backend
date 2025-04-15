@@ -1,4 +1,4 @@
-package backend.hiteen.global;
+package backend.hiteen.global.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
