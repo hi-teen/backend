@@ -22,7 +22,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/signUp")
+    @PostMapping("/sign-up")
     @Operation(summary = "회원가입",description = "사용자가 회원가입을 합니다.")
     public ResponseEntity<MemberResponse> signUp(@Valid @RequestBody MemberCreateRequest request){
         MemberResponse memberResponse= memberService.signUp(request);
