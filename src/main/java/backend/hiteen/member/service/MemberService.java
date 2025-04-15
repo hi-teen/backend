@@ -27,6 +27,7 @@ public class MemberService {
         return new MemberResponse(member);
     }
 
+
     //이메일 중복 예외처리
     private void validateDuplicateEmail(String email){
         if(memberRepository.existsByEmail(email)){

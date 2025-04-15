@@ -1,6 +1,6 @@
 package backend.hiteen.board.entity;
 
-import backend.hiteen.global.BaseTimeEntity;
+import backend.hiteen.global.entity.BaseTimeEntity;
 import backend.hiteen.love.entity.Love;
 import backend.hiteen.member.entity.Member;
 import backend.hiteen.scrap.entity.Scrap;
