@@ -4,11 +4,15 @@ import backend.hiteen.board.entity.Board;
 import backend.hiteen.board.repository.BoardRepository;
 import backend.hiteen.member.entity.Member;
 import backend.hiteen.member.repository.MemberRepository;
+import backend.hiteen.scrap.dto.ScrapBoardResponse;
 import backend.hiteen.scrap.entity.Scrap;
 import backend.hiteen.scrap.repository.ScrapRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +36,13 @@ public class ScrapService {
         }
         board.decreaseScrapCount();
         return deleteScrap(member,board);
+    }
+
+    //내가 스크랩 한 게시글 조회
+    @Transactional(readOnly = true)
+    public List<ScrapBoardResponse> getMyScrapedBoards(Long memebrId){
+        List<Board> boards=scrapRepository.findScrapedBoardsByMemberId(memebrId);
+        return boards.stream().map(ScrapBoardResponse::new).collect(Collectors.toList());
     }
 
     private boolean hasScrapBoard(Member member, Board board){

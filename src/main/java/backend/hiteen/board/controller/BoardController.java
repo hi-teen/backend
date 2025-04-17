@@ -57,17 +57,4 @@ public class BoardController {
         return ResponseEntity.ok(boardResponse);
     }
 
-    @GetMapping("/members/{memberId}/boards/loves")
-    @Operation(summary = "내가 좋아요 한 게시글 전체 조회", description ="사용자가 좋아요 한 게시글을 전체 조회합니다.")
-    public ResponseEntity<List<BoardResponse>> getMyLovedBoards(@PathVariable Long memberId){
-        List<BoardResponse> responses=boardService.getMyLovedBoard(memberId);
-        return ResponseEntity.ok(responses);
-    }
-
-    @GetMapping("members/{memberId}/boards/scraps")
-    @Operation(summary = "내가 스크랩 한 게시글 전체 조회", description ="사용자가 스크랩 한 게시글을 전체 조회합니다.")
-    public ResponseEntity<List<BoardResponse>> getMyScrapedBoards(@PathVariable Long memberId){
-        List<BoardResponse> responses=boardService.getMyScrapedBoard(memberId);
-        return ResponseEntity.ok(responses);
-    }
 }
