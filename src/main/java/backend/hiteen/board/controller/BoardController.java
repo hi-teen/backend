@@ -17,19 +17,19 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/boards")
+@RequestMapping
 @Tag(name = "Board", description = "게시글 API")
 public class BoardController {
 
     private final BoardService boardService;
 
-    @PostMapping
+    @PostMapping("/boards")
     @Operation(summary = "게시글 추가", description = "사용자가 게시글을 작성합니다.")
     public ResponseEntity<BoardResponse> createBoard(@Valid @RequestBody BoardCreateRequest request){
         BoardResponse response=boardService.createBoard(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-    @GetMapping
+    @GetMapping("/boards")
     @Operation(summary = "게시글 전체 조회", description = "사용자가 모든 게시글을 조회합니다.")
     public ResponseEntity<List<BoardResponse>> getAllBoards(){
         List<BoardResponse> responses=boardService.getAllBoards();
