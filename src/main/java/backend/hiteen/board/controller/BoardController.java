@@ -17,19 +17,19 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/boards")
+@RequestMapping
 @Tag(name = "Board", description = "게시글 API")
 public class BoardController {
 
     private final BoardService boardService;
 
-    @PostMapping
+    @PostMapping("/boards")
     @Operation(summary = "게시글 추가", description = "사용자가 게시글을 작성합니다.")
     public ResponseEntity<BoardResponse> createBoard(@Valid @RequestBody BoardCreateRequest request){
         BoardResponse response=boardService.createBoard(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-    @GetMapping
+    @GetMapping("/boards")
     @Operation(summary = "게시글 전체 조회", description = "사용자가 모든 게시글을 조회합니다.")
     public ResponseEntity<List<BoardResponse>> getAllBoards(){
         List<BoardResponse> responses=boardService.getAllBoards();
@@ -57,17 +57,4 @@ public class BoardController {
         return ResponseEntity.ok(boardResponse);
     }
 
-    @GetMapping("/members/{memberId}/boards/loves")
-    @Operation(summary = "내가 좋아요 한 게시글 전체 조회", description ="사용자가 좋아요 한 게시글을 전체 조회합니다.")
-    public ResponseEntity<List<BoardResponse>> getMyLovedBoards(@PathVariable Long memberId){
-        List<BoardResponse> responses=boardService.getMyLovedBoard(memberId);
-        return ResponseEntity.ok(responses);
-    }
-
-    @GetMapping("members/{memberId}/boards/scraps")
-    @Operation(summary = "내가 스크랩 한 게시글 전체 조회", description ="사용자가 스크랩 한 게시글을 전체 조회합니다.")
-    public ResponseEntity<List<BoardResponse>> getMyScrapedBoards(@PathVariable Long memberId){
-        List<BoardResponse> responses=boardService.getMyScrapedBoard(memberId);
-        return ResponseEntity.ok(responses);
-    }
 }
