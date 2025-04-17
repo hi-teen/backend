@@ -2,6 +2,7 @@ package backend.hiteen.love.service;
 
 import backend.hiteen.board.entity.Board;
 import backend.hiteen.board.repository.BoardRepository;
+import backend.hiteen.love.dto.LoveBoardResponse;
 import backend.hiteen.love.entity.Love;
 import backend.hiteen.love.repository.LoveRepository;
 import backend.hiteen.member.entity.Member;
@@ -9,6 +10,9 @@ import backend.hiteen.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +36,12 @@ public class LoveService {
         }
          board.decreaseLoveCount();
         return deleteLove(member,board);
+    }
+
+    @Transactional(readOnly = true)
+    public List<LoveBoardResponse> getMyLovedBoards(Long memberId){
+        List<Board> boards=loveRepository.findLovedBoardsByMemberId(memberId);
+        return boards.stream().map(LoveBoardResponse::new).collect(Collectors.toList());
     }
 
     private boolean hasLoveBoard(Member member, Board board){
