@@ -18,7 +18,7 @@ public class LoveController {
 
     private final LoveService loveService;
 
-    @PostMapping("/member/{memberId}/board/{boardId}/love")
+    @PostMapping("/members/{memberId}/boards/{boardId}/loves")
     @Operation(summary = "좋아요", description = "사용자가 좋아요를 추가하거나 취소합니다.")
     public ResponseEntity<String> loveBoard(@PathVariable Long memberId, @PathVariable Long boardId){
         String message=loveService.updateLoveBoard(memberId,boardId);

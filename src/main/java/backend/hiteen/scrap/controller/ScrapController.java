@@ -18,7 +18,7 @@ public class ScrapController {
 
     private final ScrapService scrapService;
 
-    @PostMapping("/member/{memberId}/board/{boardId}/scrap")
+    @PostMapping("/members/{memberId}/boards/{boardId}/scraps")
     @Operation(summary = "스크랩", description = "사용자가 게시글을 스크랩/스크랩 취소 합니다.")
     public ResponseEntity<String> scrapBoard(@PathVariable Long memberId, @PathVariable Long boardId){
         String message=scrapService.updateScrapBoard(memberId,boardId);
