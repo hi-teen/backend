@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
+//TODO: 엔드포인트 공통으로 시작 'boards'는 @RequestMappint("/boards")로 사용할 것
+//FIXME: 내가 쓴 글 조회는 토큰으로 넘겨서 엔드포인트에는 memberId 뺄 것 (+ memberId PathVariable 제거)
 @RestController
 @RequiredArgsConstructor
 @RequestMapping
@@ -29,6 +30,13 @@ public class BoardController {
         BoardResponse response=boardService.createBoard(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    /*
+     FIXME: description 설명 모호함.
+     getAllBoards와 getMyBoards의 Swagger 설명이 혼동됨.
+     → '전체 게시글 조회' vs '내가 쓴 게시글 조회' 구분 필요.
+     getBoardById도 동일
+    */
     @GetMapping("/boards")
     @Operation(summary = "게시글 전체 조회", description = "사용자가 모든 게시글을 조회합니다.")
     public ResponseEntity<List<BoardResponse>> getAllBoards(){

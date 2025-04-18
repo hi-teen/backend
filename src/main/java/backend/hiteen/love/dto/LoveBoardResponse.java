@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+//TODO: @Schema(description, example) 각 필드마다 추가
 
 @Getter
 public class LoveBoardResponse {
@@ -19,7 +20,7 @@ public class LoveBoardResponse {
     private LocalDateTime createdDate;
 
     public LoveBoardResponse(Board board){
-        this.id= board.getId();;
+        this.id= board.getId();
         this.title= board.getTitle();
         this.content= board.getContent();
         this.loveCount=board.getLoveCount();

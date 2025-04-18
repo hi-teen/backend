@@ -45,6 +45,7 @@ public class ScrapService {
         return boards.stream().map(ScrapBoardResponse::new).collect(Collectors.toList());
     }
 
+    //FIXME: boolean 메서드는 의문형 스타일로 많이 작성하는편임. 스크랩 여부 확인인데 has를 쓰니깐 가지고있다? 라고 읽힘
     private boolean hasScrapBoard(Member member, Board board){
         return scrapRepository.findByMemberAndBoard(member,board).isPresent();
     }

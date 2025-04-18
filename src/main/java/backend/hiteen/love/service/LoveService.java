@@ -38,12 +38,15 @@ public class LoveService {
         return deleteLove(member,board);
     }
 
+
+    //FIXME: 자바17은 .toList() 사용 가능하니 가독성을 위해 수정.
     @Transactional(readOnly = true)
     public List<LoveBoardResponse> getMyLovedBoards(Long memberId){
         List<Board> boards=loveRepository.findLovedBoardsByMemberId(memberId);
         return boards.stream().map(LoveBoardResponse::new).collect(Collectors.toList());
     }
 
+    //FIXME: boolean 메서드는 의문형 스타일로 많이 작성하는편임. 좋아요 여부 확인인데 has를 쓰니깐 가지고있다? 라고 읽힘
     private boolean hasLoveBoard(Member member, Board board){
         return loveRepository.findByMemberAndBoard(member,board).isPresent();
     }

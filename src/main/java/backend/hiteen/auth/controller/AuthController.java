@@ -25,6 +25,7 @@ public class AuthController {
         return ResponseEntity.ok(token);
     }
     @GetMapping("/me")
+    //TODO: @Operation(summary, description) 추가
     public ResponseEntity<String> me() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return ResponseEntity.ok("현재 로그인된 사용자: " + email);
