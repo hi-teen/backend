@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
 @NoArgsConstructor
+//TODO: @Schema(description, example) 각 필드마다 추가,
 public class MemberCreateRequest {
 
     @NotBlank(message = "이메일을 입력해주세요.")

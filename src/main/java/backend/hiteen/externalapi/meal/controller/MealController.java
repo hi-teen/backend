@@ -16,6 +16,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/school-meal")
 @Tag(name = "SchoolMeal", description = "급식표 API")
+// TODO: Swagger 문서 내 연동 API 설명 추가(NEIS API 기준 입력값 등)
+// TODO: 응답 데이터 예시 추가
 @RequiredArgsConstructor
 public class MealController {
 

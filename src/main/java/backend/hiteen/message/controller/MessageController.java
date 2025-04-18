@@ -18,6 +18,8 @@ import java.util.List;
 @RequestMapping("messages")
 @RequiredArgsConstructor
 @Tag(name = "message", description = "쪽지 API")
+//TODO: @Operation(summary, description) 추가 + 쪽지방 생성 조건
+//TODO: 모든 필드에 @Schema(description, example) 작성
 public class MessageController {
 
     private final MessageService messageService;

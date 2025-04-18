@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+//TODO: @Schema(description, example) 각 필드마다 추가
 
 @Getter
 public class ScrapBoardResponse {
