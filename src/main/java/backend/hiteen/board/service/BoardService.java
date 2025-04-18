@@ -64,18 +64,4 @@ public class BoardService {
         return new BoardResponse(board);
     }
 
-    //내가 좋아요 한 게시글 전체 조회
-    @Transactional(readOnly = true)
-    public List<BoardResponse> getMyLovedBoard(Long memberId){
-        List<Board> boards=boardRepository.findLikedBoardByMemberId(memberId);
-        return boards.stream().map(BoardResponse::new).collect(Collectors.toList());
-    }
-
-    //내가 스크랩한 게시글 전체 조회
-    @Transactional(readOnly = true)
-    public List<BoardResponse> getMyScrapedBoard(Long memberId){
-        List<Board> boards=boardRepository.findScrapedBoardByMemberId(memberId);
-        return boards.stream().map(BoardResponse::new).collect(Collectors.toList());
-    }
-
 }
