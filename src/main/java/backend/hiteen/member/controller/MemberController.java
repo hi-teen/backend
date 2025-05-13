@@ -23,8 +23,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/sign-up")
-    //TODO: description에 비밀번호 조건 설명 추가해주기.
-    @Operation(summary = "회원가입",description = "사용자가 회원가입을 합니다.")
+    @Operation(summary = "회원가입",description = "사용자가 회원가입을 합니다. 비밀번호는 6자 이상이며, 영문자와 숫자를 최소 1자 이상 포함해야 합니다.")
     public ResponseEntity<MemberResponse> signUp(@Valid @RequestBody MemberCreateRequest request){
         MemberResponse memberResponse= memberService.signUp(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(memberResponse);

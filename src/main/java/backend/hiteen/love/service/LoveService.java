@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +30,7 @@ public class LoveService {
 
         Member member=memberRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("사용자가 존재하지 않습니다."));
 
-        if(!hasLoveBoard(member,board)){
+        if(!isBoardLoved(member,board)){
             board.increaseLoveCount();
             return createLove(member,board);
         }
@@ -40,7 +39,6 @@ public class LoveService {
     }
 
 
-    //FIXME: 자바17은 .toList() 사용 가능하니 가독성을 위해 수정.
     @Transactional(readOnly = true)
     public List<LoveBoardResponse> getMyLovedBoards(String email){
         Member member = memberRepository.findByEmail(email)
@@ -48,11 +46,10 @@ public class LoveService {
 
         List<Board> boards=loveRepository.findLovedBoardsByMemberId(member.getId());
 
-        return boards.stream().map(LoveBoardResponse::new).collect(Collectors.toList());
+        return boards.stream().map(LoveBoardResponse::new).toList();
     }
 
-    //FIXME: boolean 메서드는 의문형 스타일로 많이 작성하는편임. 좋아요 여부 확인인데 has를 쓰니깐 가지고있다? 라고 읽힘
-    private boolean hasLoveBoard(Member member, Board board){
+    private boolean isBoardLoved(Member member, Board board){
         return loveRepository.findByMemberAndBoard(member,board).isPresent();
     }
 

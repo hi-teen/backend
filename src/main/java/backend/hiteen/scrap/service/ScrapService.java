@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +30,7 @@ public class ScrapService {
         Board board=boardRepository.findById(boardId)
                 .orElseThrow(()-> new IllegalArgumentException("게시글이 존재하지 않습니다."));
 
-        if (!hasScrapBoard(member, board)){
+        if (!isBoardScrapped(member, board)){
             board.increaseScrapCount();
             return createScrap(member,board);
         }
@@ -48,11 +47,10 @@ public class ScrapService {
 
         List<Board> boards=scrapRepository.findScrapedBoardsByMemberId(member.getId());
 
-        return boards.stream().map(ScrapBoardResponse::new).collect(Collectors.toList());
+        return boards.stream().map(ScrapBoardResponse::new).toList();
     }
 
-    //FIXME: boolean 메서드는 의문형 스타일로 많이 작성하는편임. 스크랩 여부 확인인데 has를 쓰니깐 가지고있다? 라고 읽힘
-    private boolean hasScrapBoard(Member member, Board board){
+    private boolean isBoardScrapped(Member member, Board board){
         return scrapRepository.findByMemberAndBoard(member,board).isPresent();
     }
 

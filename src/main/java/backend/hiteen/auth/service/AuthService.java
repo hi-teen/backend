@@ -19,7 +19,7 @@ public class AuthService {
         Member member=memberRepository.findByEmail(email)
                 .orElseThrow(()-> new IllegalArgumentException("존재하지 않는 이메일입니다."));
 
-        if (!member.getPassword().matches(password,passwordEncoder)){
+        if (!member.getPassword().isPasswordMatch(password,passwordEncoder)){
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
