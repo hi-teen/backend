@@ -24,11 +24,12 @@ public class LoveService {
 
     // 좋아요 기능
     @Transactional
-    public String updateLoveBoard(Long memberId, Long boardId){
+    public String updateLoveBoard(String email, Long boardId){
+
         Board board=boardRepository.findById(boardId)
                 .orElseThrow(()->new IllegalArgumentException("게시글이 존재하지 않습니다."));
 
-        Member member=memberRepository.findById(memberId).orElse(null);
+        Member member=memberRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("사용자가 존재하지 않습니다."));
 
         if(!hasLoveBoard(member,board)){
             board.increaseLoveCount();
@@ -41,8 +42,12 @@ public class LoveService {
 
     //FIXME: 자바17은 .toList() 사용 가능하니 가독성을 위해 수정.
     @Transactional(readOnly = true)
-    public List<LoveBoardResponse> getMyLovedBoards(Long memberId){
-        List<Board> boards=loveRepository.findLovedBoardsByMemberId(memberId);
+    public List<LoveBoardResponse> getMyLovedBoards(String email){
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        List<Board> boards=loveRepository.findLovedBoardsByMemberId(member.getId());
+
         return boards.stream().map(LoveBoardResponse::new).collect(Collectors.toList());
     }
 
