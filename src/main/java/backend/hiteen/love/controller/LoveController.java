@@ -16,20 +16,20 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping
+@RequestMapping("/loves")
 @Tag(name = "Love", description = "좋아요 API")
 public class LoveController {
 
     private final LoveService loveService;
 
-    @PostMapping("/loves")
+    @PostMapping
     @Operation(summary = "좋아요", description = "사용자가 좋아요를 추가하거나 취소합니다.")
     public ResponseEntity<String> loveBoard(@AuthenticationPrincipal String email, @RequestParam Long boardId){
         String message=loveService.updateLoveBoard(email,boardId);
         return ResponseEntity.ok(message);
     }
 
-    @GetMapping("/loves/my")
+    @GetMapping("/my")
     @Operation(summary = "내가 좋아요 한 게시글 전체 조회", description = "사용자가 좋아요 한 게시글을 전체 조회합니다.")
     public ResponseEntity<List<LoveBoardResponse>> getMyLovedBoards(@AuthenticationPrincipal String email){
         List<LoveBoardResponse> responses=loveService.getMyLovedBoards(email);
