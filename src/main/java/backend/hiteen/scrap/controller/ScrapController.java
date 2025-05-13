@@ -10,8 +10,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-//TODO: 엔드포인트 공통으로 시작 'scraps'는 @RequestMappint("/scraps")로 사용할 것
-//FIXME: 내가 좋아요 한 게시글 조회는 토큰으로 넘겨서 엔드포인트에는 memberId 뺄 것 (+ memberId PathVariable 제거)
 
 @RestController
 @RequestMapping("/scraps")
