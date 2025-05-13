@@ -6,12 +6,11 @@ import backend.hiteen.board.entity.Board;
 import backend.hiteen.board.repository.BoardRepository;
 import backend.hiteen.member.entity.Member;
 import backend.hiteen.member.repository.MemberRepository;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,8 +35,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public List<BoardResponse> getAllBoards(){
         List<Board> boards =boardRepository.findAll();
-        return boards.stream().map(BoardResponse::new)
-                .collect(Collectors.toList());
+        return boards.stream().map(BoardResponse::new).toList();
 
     }
 
@@ -57,7 +55,7 @@ public class BoardService {
 
         List<Board> boards=boardRepository.findAllByMember(member);
 
-        return boards.stream().map(BoardResponse::new).collect(Collectors.toList());
+        return boards.stream().map(BoardResponse::new).toList();
     }
 
 }

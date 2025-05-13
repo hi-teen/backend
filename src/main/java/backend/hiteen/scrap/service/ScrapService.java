@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +47,7 @@ public class ScrapService {
 
         List<Board> boards=scrapRepository.findScrapedBoardsByMemberId(member.getId());
 
-        return boards.stream().map(ScrapBoardResponse::new).collect(Collectors.toList());
+        return boards.stream().map(ScrapBoardResponse::new).toList();
     }
 
     private boolean isBoardScrapped(Member member, Board board){
