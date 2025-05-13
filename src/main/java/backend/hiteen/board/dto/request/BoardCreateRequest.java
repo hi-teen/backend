@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BoardCreateRequest {
 
-    private Long memberId;
-
     @NotBlank(message = "제목을 입력해주세요.")
     private String title;
 

@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,19 +18,20 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping
+@RequestMapping("/boards")
 @Tag(name = "Board", description = "게시글 API")
 public class BoardController {
 
     private final BoardService boardService;
 
-    @PostMapping("/boards")
+    @PostMapping
     @Operation(summary = "게시글 추가", description = "사용자가 게시글을 작성합니다.")
-    public ResponseEntity<BoardResponse> createBoard(@Valid @RequestBody BoardCreateRequest request){
-        BoardResponse response=boardService.createBoard(request);
+    public ResponseEntity<BoardResponse> createBoard(@AuthenticationPrincipal String email,
+            @Valid @RequestBody BoardCreateRequest request){
+        BoardResponse response=boardService.createBoard(email,request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-    @GetMapping("/boards")
+    @GetMapping
     @Operation(summary = "게시글 전체 조회", description = "사용자가 모든 게시글을 조회합니다.")
     public ResponseEntity<List<BoardResponse>> getAllBoards(){
         List<BoardResponse> responses=boardService.getAllBoards();
@@ -43,18 +45,11 @@ public class BoardController {
         return ResponseEntity.ok(boardResponse);
     }
 
-    @GetMapping("/members/{memberId}/boards")
+    @GetMapping("/my")
     @Operation(summary = "내가 쓴 글 전체 조회", description = "사용자가 작성한 전체 게시글을 조회합니다.")
-    public ResponseEntity<List<BoardResponse>> getAllMyBoards(@PathVariable Long memberId){
-        List<BoardResponse> responses=boardService.getMyBoards(memberId);
+    public ResponseEntity<List<BoardResponse>> getAllMyBoards(@AuthenticationPrincipal String email){
+        List<BoardResponse> responses=boardService.getAllMyBoards(email);
         return ResponseEntity.ok(responses);
-    }
-
-    @GetMapping("/members/{memberId}/boards/{boardId}")
-    @Operation(summary = "내가 쓴 글 단일 조회", description = "사용자가 작성한 특정 게시글을 조회합니다.")
-    public ResponseEntity<BoardResponse> getMyBoardDetail(@PathVariable Long memberId, @PathVariable Long boardId){
-        BoardResponse boardResponse=boardService.getMyBoardDetail(memberId, boardId);
-        return ResponseEntity.ok(boardResponse);
     }
 
 }

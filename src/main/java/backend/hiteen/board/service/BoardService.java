@@ -22,13 +22,13 @@ public class BoardService {
 
     // 게시글 작성
     @Transactional
-    public BoardResponse createBoard(final BoardCreateRequest request){
-        Member member=memberRepository.findById(request.getMemberId())
-                .orElse(null);
-//        Throw(()->new IllegalArgumentException("존재하지 않는 회원입니다."));
+    public BoardResponse createBoard(String email,final BoardCreateRequest request){
+
+        Member member=memberRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("존재하지 않는 회원입니다."));
 
         Board board=Board.create(member,request.getTitle(),request.getContent());
         boardRepository.save(board);
+
         return new BoardResponse(board);
     }
 
@@ -51,17 +51,13 @@ public class BoardService {
 
     //게시글 전체 조회 - 내가 작성한
     @Transactional(readOnly = true)
-    public List<BoardResponse> getMyBoards(Long memberId){
-        List<Board> boards=boardRepository.findAllByMemberId(memberId);
-        return boards.stream().map(BoardResponse::new).collect(Collectors.toList());
-    }
+    public List<BoardResponse> getAllMyBoards(String email){
 
-    //게시글 단일 조회 - 내가 작성한
-    @Transactional(readOnly = true)
-    public BoardResponse getMyBoardDetail(Long memberId, Long boardId){
-        Board board=boardRepository.findByMemberIdAndId(memberId, boardId)
-                .orElseThrow(()-> new IllegalArgumentException("해당하는 게시글이 존재하지 않습니다."));
-        return new BoardResponse(board);
+        Member member=memberRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        List<Board> boards=boardRepository.findAllByMember(member);
+
+        return boards.stream().map(BoardResponse::new).collect(Collectors.toList());
     }
 
 }
