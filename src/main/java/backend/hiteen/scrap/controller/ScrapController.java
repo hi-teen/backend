@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,17 +21,17 @@ public class ScrapController {
 
     private final ScrapService scrapService;
 
-    @PostMapping("/members/{memberId}/scraps/boards/{boardId}")
+    @PostMapping("/scraps")
     @Operation(summary = "스크랩", description = "사용자가 게시글을 스크랩/스크랩 취소 합니다.")
-    public ResponseEntity<String> scrapBoard(@PathVariable Long memberId, @PathVariable Long boardId){
-        String message=scrapService.updateScrapBoard(memberId,boardId);
+    public ResponseEntity<String> scrapBoard(@AuthenticationPrincipal String email, @RequestParam Long boardId){
+        String message=scrapService.updateScrapBoard(email,boardId);
         return ResponseEntity.ok(message);
     }
 
-    @GetMapping("/members/{memberId}/scraps/boards")
+    @GetMapping("/scraps/my")
     @Operation(summary = "내가 스크랩 한 게시글 전체 조회", description = "사용자가 스크랩 한 게시글을 전체 조회합니다.")
-    public ResponseEntity<List<ScrapBoardResponse>> getMyScrapedBoards(@PathVariable Long memberId){
-        List<ScrapBoardResponse> responses=scrapService.getMyScrapedBoards(memberId);
+    public ResponseEntity<List<ScrapBoardResponse>> getMyScrapedBoards(@AuthenticationPrincipal String email){
+        List<ScrapBoardResponse> responses=scrapService.getMyScrapedBoards(email);
         return ResponseEntity.ok(responses);
     }
 }

@@ -24,8 +24,9 @@ public class ScrapService {
 
     //스크랩 추가/취소
     @Transactional
-    public String updateScrapBoard(Long memberId, Long boardId){
-        Member member=memberRepository.findById(memberId).orElse(null);
+    public String updateScrapBoard(String email, Long boardId){
+        Member member=memberRepository.findByEmail(email)
+                .orElseThrow(()->new IllegalArgumentException("사용자가 존재하지 않습니다."));
 
         Board board=boardRepository.findById(boardId)
                 .orElseThrow(()-> new IllegalArgumentException("게시글이 존재하지 않습니다."));
@@ -40,8 +41,13 @@ public class ScrapService {
 
     //내가 스크랩 한 게시글 조회
     @Transactional(readOnly = true)
-    public List<ScrapBoardResponse> getMyScrapedBoards(Long memebrId){
-        List<Board> boards=scrapRepository.findScrapedBoardsByMemberId(memebrId);
+    public List<ScrapBoardResponse> getMyScrapedBoards(String email){
+
+        Member member=memberRepository.findByEmail(email)
+                .orElseThrow(()->new IllegalArgumentException("사용자가 존재하지 않습니다."));
+
+        List<Board> boards=scrapRepository.findScrapedBoardsByMemberId(member.getId());
+
         return boards.stream().map(ScrapBoardResponse::new).collect(Collectors.toList());
     }
 
