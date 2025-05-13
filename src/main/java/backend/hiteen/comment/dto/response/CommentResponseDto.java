@@ -7,6 +7,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
+// TODO: 모든 필드에 @Schema(description, example) 작성 필요
 public class CommentResponseDto {
     private Long commentId;
     private String content;

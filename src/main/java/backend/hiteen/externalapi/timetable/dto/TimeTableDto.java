@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+// TODO: 응답 데이터 예시 추가
 public class TimeTableDto {
 
     private int period;

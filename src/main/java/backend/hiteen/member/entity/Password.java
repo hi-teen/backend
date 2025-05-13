@@ -25,6 +25,7 @@ public class Password {
         this.password=encoder.encode(password);
     }
 
+    //FIXME: 자바 내장 메서드 matches가 존재. 메서드 명 변경필요. 이것 역시 비밀번호 여부 확인이니 맞게 네이밍 리팩토링 필요.
     public boolean matches(String password, PasswordEncoder encoder){
         return encoder.matches(password,this.password);
     }

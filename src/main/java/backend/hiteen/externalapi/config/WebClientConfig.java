@@ -1,4 +1,4 @@
-package backend.hiteen.config;
+package backend.hiteen.externalapi.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

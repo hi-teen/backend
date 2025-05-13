@@ -19,6 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/timetable")
 @Tag(name = "TimeTable", description = "시간표 API")
+// TODO: Swagger 문서 내 연동 API 설명 추가(NEIS API 기준 입력값 등)
 public class TimeTableController {
 
     private final TimeTableService timeTableService;

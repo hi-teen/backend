@@ -17,6 +17,7 @@ import java.util.List;
 @RequestMapping("/comments")
 @RequiredArgsConstructor
 @Tag(name = "Comment", description = "댓글 API")
+//TODO: @Operation(summary, description) 추가
 public class CommentController {
 
     private final CommentService commentService;
