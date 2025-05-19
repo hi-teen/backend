@@ -1,7 +1,10 @@
 package backend.hiteen.externalapi.meal.controller;
 
+import backend.hiteen.common.response.ApiResponse;
+import backend.hiteen.common.response.SuccessCode;
 import backend.hiteen.externalapi.meal.service.MealService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,20 +19,23 @@ import java.util.Map;
 @RestController
 @RequestMapping("/school-meal")
 @Tag(name = "SchoolMeal", description = "급식표 API")
-// TODO: Swagger 문서 내 연동 API 설명 추가(NEIS API 기준 입력값 등)
-// TODO: 응답 데이터 예시 추가
 @RequiredArgsConstructor
 public class MealController {
 
     private final MealService mealService;
 
     @GetMapping
-    @Operation(summary = "급식표 조회", description = "1달치 급식을 조회합니다.")
-    public ResponseEntity<Map<String, List<String>>> getSchoolMeal(@RequestParam String officeCode,
-                                                               @RequestParam String schoolCode,
-                                                               @RequestParam int year,
-                                                               @RequestParam int month) {
-        return ResponseEntity.ok(mealService.getSchoolMeal(officeCode, schoolCode, year, month));
+    @Operation(summary = "급식표 조회", description = "한달치 급식을 조회합니다.")
+    public ResponseEntity<ApiResponse<Map<String, List<String>>>> getSchoolMeal(
+            @RequestParam @Schema(description = "교육청 코드", example = "B10") String officeCode,
+            @RequestParam @Schema(description = "학교 코드", example = "7010117") String schoolCode,
+            @RequestParam @Schema(description = "년도", example = "2025")int year,
+            @RequestParam @Schema(description = "월", example = "5")int month) {
+
+        Map<String, List<String>> meals = mealService.getSchoolMeal(officeCode, schoolCode, year, month);
+        return ResponseEntity
+                .status(SuccessCode.MEAL_FETCHED.getStatus())
+                .body(ApiResponse.success(SuccessCode.MEAL_FETCHED, meals));
     }
 
 }

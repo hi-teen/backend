@@ -2,23 +2,25 @@ package backend.hiteen.message.service;
 
 
 import backend.hiteen.board.entity.Board;
+import backend.hiteen.board.exception.BoardNotFoundException;
 import backend.hiteen.board.repository.BoardRepository;
 import backend.hiteen.comment.entity.Comment;
 import backend.hiteen.comment.repository.CommentRepository;
-import backend.hiteen.message.controller.MessageController;
+import backend.hiteen.common.response.ApiResponse;
+import backend.hiteen.common.response.SuccessCode;
+import backend.hiteen.message.dto.response.MessageResponse;
 import backend.hiteen.message.entity.Message;
 import backend.hiteen.message.entity.MessageRoom;
+import backend.hiteen.message.exception.MessageRoomNotFoundException;
 import backend.hiteen.message.repository.MessageRepository;
 import backend.hiteen.message.repository.MessageRoomRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,12 +33,23 @@ public class MessageService {
     private final MessageRoomRepository messageRoomRepository;
 
 
+    public MessageResponse toDto(Message message) {
+        return new MessageResponse(
+                message.getId(),
+                message.getMessageRoom().getId(),
+                message.getSenderId(),
+                message.getContent(),
+                message.getCreatedAt(),
+                computeDisplayName(message)
+        );
+    }
+
     // 대화 방 생성 및 메시지 전송
     @Transactional
     public Message sendMessage(Long boardId, Long senderId, Long receiverId, String content) {
 
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+                .orElseThrow(BoardNotFoundException::new);
 
         Optional<MessageRoom> optionalRoom = messageRoomRepository.findMessageRoomByBoardIdAndSenderIdAndReceiverId(boardId, senderId, receiverId);
         MessageRoom messageRoom = optionalRoom.orElse(null);
@@ -67,7 +80,7 @@ public class MessageService {
     @Transactional
     public Message sendMessageInRoom(Long roomId, Long senderId, String content) {
         MessageRoom room = messageRoomRepository.findById(roomId)
-                .orElseThrow(() -> new RuntimeException("대화방이 존재하지 않습니다."));
+                .orElseThrow(MessageRoomNotFoundException::new);
         Message message = Message.builder()
                 .messageRoom(room)
                 .senderId(senderId)
@@ -92,43 +105,24 @@ public class MessageService {
     }
 
     //롱폴링
-    public DeferredResult<ResponseEntity<List<MessageController.MessageResponse>>> pollMessages(Long roomId, Long lastMessageId) {
-        long timeout = 30000L;
-        DeferredResult<ResponseEntity<List<MessageController.MessageResponse>>> deferredResult = new DeferredResult<>(timeout);
+    public DeferredResult<ResponseEntity<ApiResponse<List<MessageResponse>>>> pollMessages(Long roomId, Long lastMessageId) {
+        long timeout = 30_000L;
+        DeferredResult<ResponseEntity<ApiResponse<List<MessageResponse>>>> result =
+                new DeferredResult<>(timeout);
 
         new Thread(() -> {
-            long elapsed = 0;
-            while (elapsed < timeout) {
-                List<Message> newMessages = getMessageAfter(roomId, lastMessageId);
+            List<MessageResponse> body = getMessageAfter(roomId, lastMessageId).stream()
+                    .map(this::toDto)
+                    .toList();
+            ResponseEntity<ApiResponse<List<MessageResponse>>> response =
+                    ResponseEntity
+                            .status(SuccessCode.MESSAGE_POLLED.getStatus())
+                            .body(ApiResponse.success(SuccessCode.MESSAGE_POLLED, body));
 
-                if (!newMessages.isEmpty()) {
-                    List<MessageController.MessageResponse> responses = newMessages.stream()
-                            .map(m ->{
-                                String nickname = computeDisplayName(m);
-                                return new MessageController.MessageResponse(
-                                        m.getId(),
-                                        m.getMessageRoom().getId(),
-                                        m.getSenderId(),
-                                        m.getContent(),
-                                        m.getCreatedAt(),
-                                        nickname
-                                );
-                            })
-                            .toList();
-                    deferredResult.setResult(ResponseEntity.ok(responses));
-                    return;
-                }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    deferredResult.setErrorResult(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
-                    return;
-                }
-                elapsed += 1000;
-            }
-            deferredResult.setResult(ResponseEntity.ok(Collections.emptyList()));
+            result.setResult(response);
         }).start();
-        return deferredResult;
+
+        return result;
     }
 
 
@@ -147,6 +141,5 @@ public class MessageService {
                     .orElse("익명");
         }
     }
-
 
 }
