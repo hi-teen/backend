@@ -1,11 +1,13 @@
 package backend.hiteen.comment.service;
 import backend.hiteen.board.entity.Board;
+import backend.hiteen.board.exception.BoardNotFoundException;
 import backend.hiteen.board.repository.BoardRepository;
 import backend.hiteen.comment.dto.request.CommentRequestDto;
 import backend.hiteen.comment.dto.request.ReplyCommentRequestDto;
 import backend.hiteen.comment.dto.response.CommentResponseDto;
 import backend.hiteen.comment.dto.response.ReplyCommentResponseDto;
 import backend.hiteen.comment.entity.Comment;
+import backend.hiteen.comment.exception.CommentNotFoundException;
 import backend.hiteen.comment.repository.CommentRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,11 +24,11 @@ public class CommentService {
 
     // 댓글 등록
     @Transactional
-    public void addComment(CommentRequestDto requestDto) {
+    public CommentResponseDto addComment(CommentRequestDto requestDto) {
         // TODO: 멤버 존재 여부 검증 로직 추가 예정(멤버 기능 완료 시 반영)
 
         Board board = boardRepository.findById(requestDto.getBoardId())
-                .orElseThrow();
+                .orElseThrow(BoardNotFoundException::new);
         int nextAnonNumber = nextAnonymousNumber(board);
 
         Comment comment = Comment.builder()
@@ -35,15 +37,21 @@ public class CommentService {
                 .board(board)
                 .build();
         commentRepository.save(comment);
+
+        return new CommentResponseDto(
+                comment.getId(),
+                comment.getContent(),
+                comment.getAnonymousNumber(),
+                List.of()
+        );
     }
 
     @Transactional
-    public void addReplyComment(Long commentId, ReplyCommentRequestDto replyRequest) {
+    public CommentResponseDto addReplyComment(Long commentId, ReplyCommentRequestDto replyRequest) {
         Comment parentComment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("댓글이 존재하지 않습니다."));
+                .orElseThrow(CommentNotFoundException::new);
 
         Board board = parentComment.getBoard();
-
         int nextAnonNumber = nextAnonymousNumber(board);
 
         Comment replycomment = Comment.builder()
@@ -54,6 +62,13 @@ public class CommentService {
                 .build();
 
         commentRepository.save(replycomment);
+
+        return new CommentResponseDto(
+                replycomment.getId(),
+                replycomment.getContent(),
+                replycomment.getAnonymousNumber(),
+                List.of()
+        );
     }
 
     private int nextAnonymousNumber(Board board) {
@@ -65,7 +80,7 @@ public class CommentService {
     @Transactional(readOnly = true)
     public List<CommentResponseDto> getComments(Long boardId) {
         if (!boardRepository.existsById(boardId)) {
-            throw new RuntimeException("게시글이 존재하지 않습니다.");
+            throw new BoardNotFoundException();
         }
 
         List<Comment> topLevelComments = commentRepository.findRootsByBoardId(boardId);

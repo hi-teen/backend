@@ -1,5 +1,6 @@
 package backend.hiteen.externalapi.timetable.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,9 +8,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-// TODO: 응답 데이터 예시 추가
 public class TimeTableDto {
 
+    @Schema(description = "교시 번호(1교시, 2교시....)", example = "1")
     private int period;
+
+    @Schema(description = "과목 명칭", example = "수학")
     private String subject;
 }

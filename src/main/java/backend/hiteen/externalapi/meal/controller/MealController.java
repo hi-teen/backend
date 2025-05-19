@@ -1,5 +1,7 @@
 package backend.hiteen.externalapi.meal.controller;
 
+import backend.hiteen.common.response.ApiResponse;
+import backend.hiteen.common.response.SuccessCode;
 import backend.hiteen.externalapi.meal.service.MealService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,11 +27,15 @@ public class MealController {
 
     @GetMapping
     @Operation(summary = "급식표 조회", description = "1달치 급식을 조회합니다.")
-    public ResponseEntity<Map<String, List<String>>> getSchoolMeal(@RequestParam String officeCode,
-                                                               @RequestParam String schoolCode,
-                                                               @RequestParam int year,
-                                                               @RequestParam int month) {
-        return ResponseEntity.ok(mealService.getSchoolMeal(officeCode, schoolCode, year, month));
+    public ResponseEntity<ApiResponse<Map<String, List<String>>>> getSchoolMeal(@RequestParam String officeCode,
+                                                                               @RequestParam String schoolCode,
+                                                                               @RequestParam int year,
+                                                                               @RequestParam int month) {
+
+        Map<String, List<String>> meals = mealService.getSchoolMeal(officeCode, schoolCode, year, month);
+        return ResponseEntity
+                .status(SuccessCode.MEAL_FETCHED.getStatus())
+                .body(ApiResponse.success(SuccessCode.MEAL_FETCHED, meals));
     }
 
 }
