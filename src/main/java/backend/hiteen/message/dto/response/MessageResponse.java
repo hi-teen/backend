@@ -25,7 +25,6 @@ public class MessageResponse {
     @Schema(description = "쪽지 내용", example = "반갑습니다!")
     private String content;
 
-    @Schema(description = "생성 시각", example = "2025-05-19T15:30:00")
     private LocalDateTime createdAt;
 
     @Schema(description = "작성자", example = "작성자")

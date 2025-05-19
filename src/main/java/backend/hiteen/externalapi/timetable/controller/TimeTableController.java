@@ -29,7 +29,7 @@ public class TimeTableController {
     @Operation(summary = "시간표 조회", description = "1학기 시간표를 조회합니다.")
     public ResponseEntity<ApiResponse<Map<String, List<TimeTableDto>>>> getTimeTable(
             @RequestParam @Schema(description = "교육청 코드", example = "B10") String officeCode,
-            @RequestParam @Schema(description = "학교 코드", example = "7010567") String schoolCode,
+            @RequestParam @Schema(description = "학교 코드", example = "7010117") String schoolCode,
             @RequestParam @Schema(description = "학년", example = "1") String grade,
             @RequestParam(name = "classNum") @Schema(description = "반", example = "3") String classNum) {
 

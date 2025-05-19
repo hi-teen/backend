@@ -11,6 +11,7 @@ import backend.hiteen.common.response.SuccessCode;
 import backend.hiteen.message.dto.response.MessageResponse;
 import backend.hiteen.message.entity.Message;
 import backend.hiteen.message.entity.MessageRoom;
+import backend.hiteen.message.exception.MessageRoomNotFoundException;
 import backend.hiteen.message.repository.MessageRepository;
 import backend.hiteen.message.repository.MessageRoomRepository;
 import lombok.AllArgsConstructor;
@@ -79,7 +80,7 @@ public class MessageService {
     @Transactional
     public Message sendMessageInRoom(Long roomId, Long senderId, String content) {
         MessageRoom room = messageRoomRepository.findById(roomId)
-                .orElseThrow(() -> new RuntimeException("대화방이 존재하지 않습니다."));
+                .orElseThrow(MessageRoomNotFoundException::new);
         Message message = Message.builder()
                 .messageRoom(room)
                 .senderId(senderId)
