@@ -38,5 +38,6 @@ out/
 .vscode/
 
 backend.env
+local.env
 
 .DS_Store
