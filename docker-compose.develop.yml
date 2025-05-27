@@ -6,11 +6,33 @@ services:
     container_name: mysqldb
     ports:
       - "3307:3306"
-    env_file: "backend.env"
+    env_file: backend.env
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
       - backend
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    env_file: backend.env
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    networks:
+      - backend
+
 
 volumes:
   mysql-data:
