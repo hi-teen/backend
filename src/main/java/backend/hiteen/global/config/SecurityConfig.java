@@ -17,11 +17,23 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    /****
+     * Provides a `PasswordEncoder` bean that uses BCrypt for password hashing.
+     *
+     * @return a `PasswordEncoder` instance configured with BCrypt
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /****
+     * Configures the application's security filter chain.
+     *
+     * Sets up stateless session management, disables CSRF protection, and defines authorization rules to permit unauthenticated access to authentication, sign-up, Swagger, API documentation, and actuator endpoints. All other requests require authentication. Adds the JWT authentication filter before the username/password authentication filter.
+     *
+     * @return the configured SecurityFilterChain
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
