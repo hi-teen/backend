@@ -10,7 +10,7 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
-      - backend
+      - app_network
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
@@ -31,11 +31,10 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
     networks:
-      - backend
-
+      - app_network
 
 volumes:
   mysql-data:
 
 networks:
-  backend:
+  app_network: #
