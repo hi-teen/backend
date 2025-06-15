@@ -4,5 +4,6 @@ WORKDIR /app
 RUN gradle build -x test
 
 FROM openjdk:17
-COPY --from=build /app/build/libs/*.jar .
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+WORKDIR /app
+COPY --from=build /app/build/libs/hiteen-0.0.1-SNAPSHOT.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]
