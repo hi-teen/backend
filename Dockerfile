@@ -4,5 +4,5 @@ WORKDIR /app
 RUN gradle build -x test
 
 FROM openjdk:17
-COPY --from=build /app/build/libs/*.jar app.jar
+COPY --from=build /app/build/libs/*.jar .
 ENTRYPOINT ["java", "-jar", "/app.jar"]
