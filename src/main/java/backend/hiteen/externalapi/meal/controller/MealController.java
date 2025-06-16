@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/school-meal")
+@RequestMapping("/api/v1/school-meal")
 @Tag(name = "SchoolMeal", description = "급식표 API")
 @RequiredArgsConstructor
 public class MealController {

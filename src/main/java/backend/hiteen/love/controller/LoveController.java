@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/loves")
+@RequestMapping("/api/v1/loves")
 @Tag(name = "Love", description = "좋아요 API")
 public class LoveController {
 
@@ -26,7 +26,7 @@ public class LoveController {
         return ResponseEntity.ok(message);
     }
 
-    @GetMapping("/my")
+    @GetMapping("/me")
     @Operation(summary = "내가 좋아요 한 게시글 전체 조회", description = "사용자가 좋아요 한 게시글을 전체 조회합니다.")
     public ResponseEntity<List<LoveBoardResponse>> getMyLovedBoards(@AuthenticationPrincipal String email){
         List<LoveBoardResponse> responses=loveService.getMyLovedBoards(email);

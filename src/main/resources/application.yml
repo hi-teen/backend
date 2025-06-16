@@ -15,10 +15,6 @@ spring:
   jwt:
     secret: ${JWT_SECRET}
 
-  mvc:
-    servlet:
-      path: /api/v1
-
 openapi:
   base-url: https://open.neis.go.kr/hub
   api-key: ${NEIS_API_KEY}

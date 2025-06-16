@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/scraps")
+@RequestMapping("/api/v1/scraps")
 @RequiredArgsConstructor
 @Tag(name = "Scrap", description = "스크랩 API")
 public class ScrapController {
@@ -26,7 +26,7 @@ public class ScrapController {
         return ResponseEntity.ok(message);
     }
 
-    @GetMapping("/my")
+    @GetMapping("/me")
     @Operation(summary = "내가 스크랩 한 게시글 전체 조회", description = "사용자가 스크랩 한 게시글을 전체 조회합니다.")
     public ResponseEntity<List<ScrapBoardResponse>> getMyScrapedBoards(@AuthenticationPrincipal String email){
         List<ScrapBoardResponse> responses=scrapService.getMyScrapedBoards(email);

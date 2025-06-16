@@ -16,7 +16,7 @@ import org.springframework.web.context.request.async.DeferredResult;
 import java.util.List;
 
 @RestController
-@RequestMapping("/messages")
+@RequestMapping("/api/v1/messages")
 @RequiredArgsConstructor
 @Tag(name = "Message", description = "쪽지 API")
 public class MessageController {

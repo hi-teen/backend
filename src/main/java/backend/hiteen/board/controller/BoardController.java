@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/boards")
+@RequestMapping("/api/v1/boards")
 @Tag(name = "Board", description = "게시글 API")
 public class BoardController {
 
@@ -32,7 +32,7 @@ public class BoardController {
     }
 
 
-    @GetMapping("/boards")
+    @GetMapping("")
     @Operation(summary = "전체 게시글 목록 조회", description = "모든 사용자가 작성한 게시글을 조회합니다.")
     public ResponseEntity<List<BoardResponse>> getAllBoards(){
         List<BoardResponse> responses=boardService.getAllBoards();
@@ -46,7 +46,7 @@ public class BoardController {
         return ResponseEntity.ok(boardResponse);
     }
 
-    @GetMapping("/my")
+    @GetMapping("/me")
     @Operation(summary = "내가 작성한 게시글 목록 조회", description = "사용자가 자신이 작성한 게시글 목록을 조회합니다.")
     public ResponseEntity<List<BoardResponse>> getAllMyBoards(@AuthenticationPrincipal String email){
         List<BoardResponse> responses=boardService.getAllMyBoards(email);

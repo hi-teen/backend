@@ -19,7 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/timetable")
+@RequestMapping("/api/v1/timetable")
 @Tag(name = "TimeTable", description = "시간표 API")
 public class TimeTableController {
 
