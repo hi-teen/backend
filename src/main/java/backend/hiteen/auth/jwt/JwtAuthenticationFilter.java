@@ -26,6 +26,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        String path = request.getRequestURI();
+
+        // 토큰 검사 제외 경로 설정
+        if (isPermitPath(path)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String token = resolveToken(request);
 
         if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
@@ -44,6 +52,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
+    private boolean isPermitPath(String path) {
+        return path.equals("/") ||
+                path.startsWith("/api/v1/swagger-ui") ||
+                path.startsWith("/api/v1/v3/api-docs") ||
+                path.startsWith("/auth") ||
+                path.equals("/members/sign-up");
+    }
+
 
     private String resolveToken(HttpServletRequest request) {
         String bearer = request.getHeader("Authorization");
