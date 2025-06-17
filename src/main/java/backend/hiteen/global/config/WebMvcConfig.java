@@ -14,6 +14,7 @@ public class WebMvcConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOriginPattern("https://hiteen.site");
+        config.addAllowedOriginPattern("https://www.hiteen.site");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setAllowCredentials(true);

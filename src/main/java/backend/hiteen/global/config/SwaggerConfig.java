@@ -16,6 +16,7 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         return new OpenAPI()
                 .addServersItem(new Server().url("https://hiteen.site"))
+                .addServersItem(new Server().url("https://www.hiteen.site"))
                 .components(new Components()
                         .addSecuritySchemes("BearerAuth", new io.swagger.v3.oas.models.security.SecurityScheme()
                                 .type(SecurityScheme.Type.HTTP)
