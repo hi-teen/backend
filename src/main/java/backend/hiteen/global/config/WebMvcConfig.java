@@ -15,6 +15,8 @@ public class WebMvcConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOriginPattern("https://hiteen.site");
         config.addAllowedOriginPattern("https://www.hiteen.site");
+        config.addAllowedOriginPattern("http://localhost:3000");
+        config.addAllowedOriginPattern("http://127.0.0.1:3000");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setAllowCredentials(true);
