@@ -1,6 +1,7 @@
 package backend.hiteen.board.dto.response;
 
 import backend.hiteen.board.entity.Board;
+import backend.hiteen.board.entity.DisclosureStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 
@@ -12,6 +13,7 @@ public class BoardResponse {
     private final Long id;
     private final String title;
     private final String content;
+    private final String writer;
     private final int loveCount;
     private final int scrapCount;
 
@@ -21,6 +23,7 @@ public class BoardResponse {
     public BoardResponse(Board board){
         this.id=board.getId();
         this.title=board.getTitle();
+        this.writer=board.getDisplayWriterName();
         this.content=board.getContent();
         this.loveCount=board.getLoveCount();
         this.scrapCount= board.getScrapCount();
