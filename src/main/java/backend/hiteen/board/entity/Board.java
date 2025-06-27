@@ -50,6 +50,11 @@ public class Board extends BaseTimeEntity {
     private List<Scrap> scraps;
 
 
+    /**
+     * Constructs a Board instance with the specified member, title, content, and disclosure status.
+     *
+     * Initializes love and scrap counts to zero.
+     */
     private Board(Member member, String title, String content, DisclosureStatus disclosureStatus){
         this.member=member;
         this.title=title;
@@ -59,16 +64,35 @@ public class Board extends BaseTimeEntity {
         this.disclosureStatus=disclosureStatus;
     }
 
+    /**
+     * Creates a new Board instance with the specified member, title, content, and disclosure status.
+     *
+     * @param member the author of the board post
+     * @param title the title of the board post
+     * @param content the content of the board post
+     * @param disclosureStatus the visibility status of the board post
+     * @return a new Board entity initialized with the provided values
+     */
     public static Board create(Member member, String title, String content, DisclosureStatus disclosureStatus){
         return new Board(member,title,content,disclosureStatus);
     }
 
+    /**
+     * Returns the display name of the board's writer based on the disclosure status.
+     *
+     * If the disclosure status is PUBLIC, returns the member's actual name; otherwise, returns "익명" (anonymous).
+     *
+     * @return the writer's display name or "익명" if not public
+     */
     public String getDisplayWriterName(){
         return this.disclosureStatus==DisclosureStatus.PUBLIC
                 ? this.member.getName()
                 :"익명";
     }
 
+    /**
+     * Increments the love count for this board post by one.
+     */
     public void increaseLoveCount(){
         this.loveCount+=1;
     }

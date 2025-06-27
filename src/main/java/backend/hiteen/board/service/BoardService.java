@@ -19,7 +19,16 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    // 게시글 작성
+    /**
+     * Creates a new board post associated with the specified member.
+     *
+     * Retrieves the member by email, constructs a new board post with the provided title, content, and disclosure status, saves it, and returns a response DTO representing the created board.
+     *
+     * @param email the email address of the member creating the board post
+     * @param request the request object containing the board's title, content, and disclosure status
+     * @return a response DTO representing the newly created board post
+     * @throws IllegalArgumentException if the member with the given email does not exist
+     */
     @Transactional
     public BoardResponse createBoard(String email,final BoardCreateRequest request){
 

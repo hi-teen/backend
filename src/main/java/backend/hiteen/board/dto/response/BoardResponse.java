@@ -20,6 +20,11 @@ public class BoardResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private final LocalDateTime createdDate;
 
+    /**
+     * Constructs a BoardResponse by extracting relevant data from the given Board entity.
+     *
+     * @param board the Board entity from which to initialize response fields
+     */
     public BoardResponse(Board board){
         this.id=board.getId();
         this.title=board.getTitle();
