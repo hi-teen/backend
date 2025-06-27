@@ -14,6 +14,8 @@ public class BoardResponse {
     private final String title;
     private final String content;
     private final String writer;
+    private final String category;
+    private final String categoryLabel;
     private final int loveCount;
     private final int scrapCount;
 
@@ -22,8 +24,10 @@ public class BoardResponse {
 
     public BoardResponse(Board board){
         this.id=board.getId();
-        this.title=board.getTitle();
         this.writer=board.getDisplayWriterName();
+        this.category=board.getCategory().name();
+        this.categoryLabel=board.getCategoryLabel();
+        this.title=board.getTitle();
         this.content=board.getContent();
         this.loveCount=board.getLoveCount();
         this.scrapCount= board.getScrapCount();
