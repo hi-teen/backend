@@ -4,6 +4,7 @@ import backend.hiteen.global.entity.BaseTimeEntity;
 import backend.hiteen.love.entity.Love;
 import backend.hiteen.member.entity.Member;
 import backend.hiteen.scrap.entity.Scrap;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,10 @@ public class Board extends BaseTimeEntity {
     @Column(name = "board_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DisclosureStatus disclosureStatus;
 
     @Column(nullable = false)
     private String title;
@@ -45,16 +50,23 @@ public class Board extends BaseTimeEntity {
     private List<Scrap> scraps;
 
 
-    private Board(Member member, String title, String content){
+    private Board(Member member, String title, String content, DisclosureStatus disclosureStatus){
         this.member=member;
         this.title=title;
         this.content=content;
         this.loveCount=0;
         this.scrapCount=0;
+        this.disclosureStatus=disclosureStatus;
     }
 
-    public static Board create(Member member, String title, String content){
-        return new Board(member,title,content);
+    public static Board create(Member member, String title, String content, DisclosureStatus disclosureStatus){
+        return new Board(member,title,content,disclosureStatus);
+    }
+
+    public String getDisplayWriterName(){
+        return this.disclosureStatus==DisclosureStatus.PUBLIC
+                ? this.member.getName()
+                :"익명";
     }
 
     public void increaseLoveCount(){

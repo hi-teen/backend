@@ -25,7 +25,7 @@ public class BoardService {
 
         Member member=memberRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-        Board board=Board.create(member,request.getTitle(),request.getContent());
+        Board board=Board.create(member,request.getTitle(),request.getContent(), request.getDisclosureStatus());
         boardRepository.save(board);
 
         return new BoardResponse(board);
