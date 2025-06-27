@@ -23,15 +23,19 @@ public class Board extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private DisclosureStatus disclosureStatus;
-
     @Column(nullable = false)
     private String title;
 
     @Column(nullable = false)
     private String content;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DisclosureStatus disclosureStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Category category;
 
     @Column
     private int loveCount;
@@ -50,23 +54,28 @@ public class Board extends BaseTimeEntity {
     private List<Scrap> scraps;
 
 
-    private Board(Member member, String title, String content, DisclosureStatus disclosureStatus){
+    private Board(Member member, String title, String content, DisclosureStatus disclosureStatus, Category category){
         this.member=member;
         this.title=title;
         this.content=content;
         this.loveCount=0;
         this.scrapCount=0;
         this.disclosureStatus=disclosureStatus;
+        this.category=category;
     }
 
-    public static Board create(Member member, String title, String content, DisclosureStatus disclosureStatus){
-        return new Board(member,title,content,disclosureStatus);
+    public static Board create(Member member, String title, String content, DisclosureStatus disclosureStatus,Category category){
+        return new Board(member,title,content,disclosureStatus,category);
     }
 
     public String getDisplayWriterName(){
         return this.disclosureStatus==DisclosureStatus.PUBLIC
                 ? this.member.getName()
                 :"익명";
+    }
+
+    public String getCategoryLabel(){
+        return this.category.getLabel();
     }
 
     public void increaseLoveCount(){
