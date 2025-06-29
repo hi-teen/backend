@@ -1,2 +1,8 @@
-package backend.hiteen.auth.dto.request;public class TokenReissueRequest {
+package backend.hiteen.auth.dto.request;
+
+import lombok.Getter;
+
+@Getter
+public class TokenReissueRequest {
+    private String refreshToken;
 }
