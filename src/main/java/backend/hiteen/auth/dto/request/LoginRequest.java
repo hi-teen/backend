@@ -1,4 +1,4 @@
-package backend.hiteen.auth.dto;
+package backend.hiteen.auth.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
