@@ -1,5 +1,8 @@
 package backend.hiteen.member.service;
 
+import backend.hiteen.externalapi.school.entity.School;
+import backend.hiteen.externalapi.school.exception.SchoolNotFoundException;
+import backend.hiteen.externalapi.school.reporitory.SchoolRepository;
 import backend.hiteen.member.dto.request.MemberCreateRequest;
 import backend.hiteen.member.dto.response.MemberResponse;
 import backend.hiteen.member.entity.Member;
@@ -15,6 +18,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SchoolRepository schoolRepository;
 
     //회원가입
     @Transactional
@@ -22,7 +26,11 @@ public class MemberService {
         validateDuplicateEmail(request.getEmail());
         validateDuplicateNickname(request.getNickname());
         validatePassword(request.getPassword(), request.getPasswordConfirm());
-        Member member=request.toEntity(passwordEncoder);
+
+        School school = schoolRepository.findById(request.getSchoolId())
+                .orElseThrow(SchoolNotFoundException::new);
+        Member member=request.toEntity(school, passwordEncoder);
+
         memberRepository.save(member);
         return new MemberResponse(member);
     }

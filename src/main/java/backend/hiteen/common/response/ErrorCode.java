@@ -29,8 +29,11 @@ public enum ErrorCode {
     MEAL_FETCH_FAILED(HttpStatus.BAD_GATEWAY, "급식 정보를 가져오는 데 실패했습니다."),
 
     //Timetable
-    TIMETABLE_NOT_FOUND      (HttpStatus.NOT_FOUND,     "시간표를 찾을 수 없습니다."),
-    TIMETABLE_FETCH_FAILED   (HttpStatus.BAD_GATEWAY,    "시간표를 가져오는 데 실패했습니다.");
+    TIMETABLE_NOT_FOUND(HttpStatus.NOT_FOUND,"시간표를 찾을 수 없습니다."),
+    TIMETABLE_FETCH_FAILED(HttpStatus.BAD_GATEWAY,"시간표를 가져오는 데 실패했습니다."),
+
+    //School
+    SCHOOL_NOT_FOUND(HttpStatus.NOT_FOUND,    "학교가 존재하지 않습니다.");
 
     private final HttpStatus status;
     private final String message;
