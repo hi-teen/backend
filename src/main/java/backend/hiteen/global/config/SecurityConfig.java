@@ -32,7 +32,9 @@ public class SecurityConfig {
                                          "/auth/reissue",
                                          "/members/sign-up",
                                          "/swagger-ui/**",
-                                         "/actuator/**"
+                                         "/v3/api-docs/**",
+                                         "/actuator/**",
+                                         "/schools/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
