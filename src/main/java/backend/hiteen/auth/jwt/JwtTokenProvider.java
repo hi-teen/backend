@@ -16,14 +16,23 @@ public class JwtTokenProvider {
     @Value("${jwt.secret}")
     private  String secretKey;
 
-    private final long validity=1000L * 60 * 60; //토큰 유효시간:1시간
+    private final long accessTokenvalidity=1000L * 60 * 60; //토큰 유효시간:1시간
+    private final long refreshTokenvalidity=1000L*60*60*24*7; //토큰 유효시간 7일
 
     @PostConstruct
     protected void init(){
         this.secretKey= Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(String email){
+    public String createAccessToken(String email){
+        return createToken(email,accessTokenvalidity);
+    }
+
+    public String createRefreshToken(String email){
+        return createToken(email, refreshTokenvalidity);
+    }
+
+    public String createToken(String email, long validity){
         Claims claims= Jwts.claims().setSubject(email);
         Date now=new Date();
         Date expiry=new Date(now.getTime()+validity); //1시간 후 만료

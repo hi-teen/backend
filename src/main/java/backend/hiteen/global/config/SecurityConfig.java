@@ -31,12 +31,13 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/",
-                                "/api/v1/auth/**",
-                                "/api/v1/members/sign-up",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**"
+                        .requestMatchers("/auth/login",
+                                         "/auth/reissue",
+                                         "/members/sign-up",
+                                         "/swagger-ui/**",
+                                         "/v3/api-docs/**",
+                                         "/actuator/**",
+                                         "/schools/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

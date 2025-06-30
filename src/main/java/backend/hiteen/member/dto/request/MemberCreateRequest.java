@@ -1,8 +1,10 @@
 package backend.hiteen.member.dto.request;
 
+import backend.hiteen.externalapi.school.entity.School;
 import backend.hiteen.member.entity.Member;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,14 +30,14 @@ public class MemberCreateRequest {
     @NotBlank(message = "닉네임을 입력해주세요.")
     private String nickname;
 
-    @NotBlank(message = "학교를 입력해주세요.")
-    private String school;
+    @NotNull(message = "학교를 입력해주세요.")
+    private Long schoolId;
 
     private int gradeNumber;
 
     private int classNumber;
 
-    public Member toEntity(PasswordEncoder encoder){
+    public Member toEntity(School school, PasswordEncoder encoder){
         return Member.builder()
                 .email(email)
                 .password(password)

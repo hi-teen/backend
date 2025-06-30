@@ -1,6 +1,7 @@
 package backend.hiteen.member.entity;
 
 import backend.hiteen.board.entity.Board;
+import backend.hiteen.externalapi.school.entity.School;
 import backend.hiteen.love.entity.Love;
 import backend.hiteen.scrap.entity.Scrap;
 import jakarta.persistence.*;
@@ -36,8 +37,9 @@ public class Member {
     @Column(nullable = false, unique = true)
     private String nickname;
 
-    @Column(nullable = false)
-    private String school;
+    @ManyToOne
+    @JoinColumn(name = "school_id")
+    private School school;
 
     @Column(nullable = false)
     private int gradeNumber;
@@ -55,7 +57,8 @@ public class Member {
     private List<Scrap> scraps;
 
     @Builder
-    private Member(String email, String password, String name, String nickname, String school, int gradeNumber, int classNumber, PasswordEncoder encoder) {
+    private Member(String email, String password, String name, String nickname,
+                   School school, int gradeNumber, int classNumber, PasswordEncoder encoder) {
         this.email = email;
         this.password = new Password(password, encoder);
         this.name = name;

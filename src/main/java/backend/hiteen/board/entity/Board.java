@@ -4,6 +4,7 @@ import backend.hiteen.global.entity.BaseTimeEntity;
 import backend.hiteen.love.entity.Love;
 import backend.hiteen.member.entity.Member;
 import backend.hiteen.scrap.entity.Scrap;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +29,14 @@ public class Board extends BaseTimeEntity {
     @Column(nullable = false)
     private String content;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DisclosureStatus disclosureStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Category category;
+
     @Column
     private int loveCount;
 
@@ -45,16 +54,28 @@ public class Board extends BaseTimeEntity {
     private List<Scrap> scraps;
 
 
-    private Board(Member member, String title, String content){
+    private Board(Member member, String title, String content, DisclosureStatus disclosureStatus, Category category){
         this.member=member;
         this.title=title;
         this.content=content;
         this.loveCount=0;
         this.scrapCount=0;
+        this.disclosureStatus=disclosureStatus;
+        this.category=category;
     }
 
-    public static Board create(Member member, String title, String content){
-        return new Board(member,title,content);
+    public static Board create(Member member, String title, String content, DisclosureStatus disclosureStatus,Category category){
+        return new Board(member,title,content,disclosureStatus,category);
+    }
+
+    public String getDisplayWriterName(){
+        return this.disclosureStatus==DisclosureStatus.PUBLIC
+                ? this.member.getName()
+                :"익명";
+    }
+
+    public String getCategoryLabel(){
+        return this.category.getLabel();
     }
 
     public void increaseLoveCount(){
