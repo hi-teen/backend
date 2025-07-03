@@ -18,6 +18,7 @@ public class BoardResponse {
     private final String categoryLabel;
     private final int loveCount;
     private final int scrapCount;
+    private final Long viewCount;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private final LocalDateTime createdDate;
@@ -32,5 +33,6 @@ public class BoardResponse {
         this.loveCount=board.getLoveCount();
         this.scrapCount= board.getScrapCount();
         this.createdDate = board.getCreatedDate();
+        this.viewCount=board.getViewCount();
     }
 }
