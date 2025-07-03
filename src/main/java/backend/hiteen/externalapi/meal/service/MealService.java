@@ -1,5 +1,6 @@
 package backend.hiteen.externalapi.meal.service;
 
+import backend.hiteen.externalapi.meal.dto.MealDto;
 import backend.hiteen.externalapi.meal.exception.MealFetchFailedException;
 import backend.hiteen.externalapi.meal.exception.MealNotFoundException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,13 +25,14 @@ public class MealService {
     @Value("${openapi.api-key}")
     private String apiKey;
 
-    public Map<String, List<String>> getSchoolMeal(String officeCode, String schoolCode, int year, int month) {
+    public Map<String, Map<String, MealDto>> getSchoolMeal(String officeCode, String schoolCode, int year, int month)
+    {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         LocalDate from = LocalDate.of(year, month, 1);
         LocalDate to = from.withDayOfMonth(from.lengthOfMonth());
 
-        String response =  neisWebClient.get()
+        String response = neisWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/mealServiceDietInfo")
                         .queryParam("KEY", apiKey)
@@ -55,15 +57,24 @@ public class MealService {
                 throw new MealNotFoundException();
             }
 
-            Map<String, List<String>> result = new LinkedHashMap<>();
+            Map<String, Map<String, MealDto>> result = new LinkedHashMap<>();
+
             for (JsonNode row : rowsNode) {
                 String date = row.path("MLSV_YMD").asText();
+                String mealType = row.path("MMEAL_SC_NM").asText();
                 String rawMenu = row.path("DDISH_NM").asText();
+                String calories = row.path("CAL_INFO").asText();
+                String nutrients = row.path("NTR_INFO").asText().replaceAll("<br/>", "\n");
+
                 List<String> menus = Arrays.stream(rawMenu.split("<br/>"))
                         .map(String::trim)
                         .filter(s -> !s.isBlank())
                         .toList();
-                result.put(date, menus);
+
+                MealDto detail = new MealDto(menus, calories, nutrients);
+
+                result.computeIfAbsent(date, d -> new LinkedHashMap<>())
+                        .put(mealType, detail);
             }
             return result;
         } catch (IOException e) {
