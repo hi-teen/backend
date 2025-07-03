@@ -43,6 +43,9 @@ public class Board extends BaseTimeEntity {
     @Column
     private int scrapCount;
 
+    @Column(nullable = false)
+    private Long viewCount=0L;
+
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
@@ -92,6 +95,10 @@ public class Board extends BaseTimeEntity {
 
     public void decreaseScrapCount(){
         this.scrapCount-=1;
+    }
+
+    public void increaseViewCount(){
+        this.viewCount+=1;
     }
 
 }
