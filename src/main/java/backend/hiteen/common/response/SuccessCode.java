@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 public enum SuccessCode {
 
     //member
+    MEMBER_FETCHED(HttpStatus.OK, "회원 정보를 조회합니다."),
+    MEMBER_UPDATED(HttpStatus.OK, "회원 정보를 수정합니다."),
+
 
     //board
 
