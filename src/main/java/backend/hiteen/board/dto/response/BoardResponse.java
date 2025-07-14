@@ -1,7 +1,6 @@
 package backend.hiteen.board.dto.response;
 
 import backend.hiteen.board.entity.Board;
-import backend.hiteen.board.entity.DisclosureStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 
@@ -21,7 +20,7 @@ public class BoardResponse {
     private final Long viewCount;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private final LocalDateTime createdDate;
+    private final LocalDateTime createdAt;
 
     public BoardResponse(Board board){
         this.id=board.getId();
@@ -32,7 +31,7 @@ public class BoardResponse {
         this.content=board.getContent();
         this.loveCount=board.getLoveCount();
         this.scrapCount= board.getScrapCount();
-        this.createdDate = board.getCreatedDate();
+        this.createdAt = board.getCreatedAt();
         this.viewCount=board.getViewCount();
     }
 }

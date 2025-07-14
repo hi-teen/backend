@@ -17,9 +17,7 @@ public class CustomUserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() ->
-                                     new UsernameNotFoundException("존재하지 않는 이메일입니다. email=" + email)
-                );
+                .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 이메일입니다. email=" + email));
         return new CustomUserPrincipal(member);
     }
 }

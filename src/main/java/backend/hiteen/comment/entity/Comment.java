@@ -1,6 +1,7 @@
 package backend.hiteen.comment.entity;
 
 import backend.hiteen.board.entity.Board;
+import backend.hiteen.global.entity.BaseTimeEntity;
 import backend.hiteen.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Comment {
+public class Comment extends BaseTimeEntity {
     @Id
     @GeneratedValue( strategy = GenerationType.AUTO)
     private Long id;
@@ -39,7 +40,5 @@ public class Comment {
     private String content;
 
     private Integer anonymousNumber;
-
-    private LocalDateTime createdAt;
 
 }

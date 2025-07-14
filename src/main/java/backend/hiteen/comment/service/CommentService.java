@@ -2,13 +2,14 @@ package backend.hiteen.comment.service;
 import backend.hiteen.board.entity.Board;
 import backend.hiteen.board.exception.BoardNotFoundException;
 import backend.hiteen.board.repository.BoardRepository;
-import backend.hiteen.comment.dto.request.CommentRequestDto;
-import backend.hiteen.comment.dto.request.ReplyCommentRequestDto;
 import backend.hiteen.comment.dto.response.CommentResponseDto;
 import backend.hiteen.comment.dto.response.ReplyCommentResponseDto;
 import backend.hiteen.comment.entity.Comment;
 import backend.hiteen.comment.exception.CommentNotFoundException;
 import backend.hiteen.comment.repository.CommentRepository;
+import backend.hiteen.member.entity.Member;
+import backend.hiteen.member.exception.MemberNotFoundException;
+import backend.hiteen.member.repository.MemberRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,20 +22,24 @@ public class CommentService {
 
     public final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
+    private final MemberRepository memberRepository;
 
     // 댓글 등록
     @Transactional
-    public CommentResponseDto addComment(CommentRequestDto requestDto) {
-        // TODO: 멤버 존재 여부 검증 로직 추가 예정(멤버 기능 완료 시 반영)
+    public CommentResponseDto addComment(Long memberId, Long boardId, String content) {
 
-        Board board = boardRepository.findById(requestDto.getBoardId())
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(MemberNotFoundException::new);
+        Board board = boardRepository.findById(boardId)
                 .orElseThrow(BoardNotFoundException::new);
+
         int nextAnonNumber = nextAnonymousNumber(board);
 
         Comment comment = Comment.builder()
-                .content(requestDto.getContent())
-                .anonymousNumber(nextAnonNumber)
+                .member(member)
                 .board(board)
+                .content(content)
+                .anonymousNumber(nextAnonNumber)
                 .build();
         commentRepository.save(comment);
 
@@ -42,22 +47,26 @@ public class CommentService {
                 comment.getId(),
                 comment.getContent(),
                 comment.getAnonymousNumber(),
+                comment.getCreatedAt(),
                 List.of()
         );
     }
 
     @Transactional
-    public CommentResponseDto addReplyComment(Long commentId, ReplyCommentRequestDto replyRequest) {
-        Comment parentComment = commentRepository.findById(commentId)
+    public CommentResponseDto addReplyComment(Long memberId,Long parentCommentId, String content) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(MemberNotFoundException::new);
+        Comment parentComment = commentRepository.findById(parentCommentId)
                 .orElseThrow(CommentNotFoundException::new);
 
         Board board = parentComment.getBoard();
         int nextAnonNumber = nextAnonymousNumber(board);
 
         Comment replycomment = Comment.builder()
-                .content(replyRequest.getContent())
-                .board(parentComment.getBoard())
+                .member(member)
+                .board(board)
                 .parentComment(parentComment)
+                .content(content)
                 .anonymousNumber(nextAnonNumber)
                 .build();
 
@@ -67,6 +76,7 @@ public class CommentService {
                 replycomment.getId(),
                 replycomment.getContent(),
                 replycomment.getAnonymousNumber(),
+                replycomment.getCreatedAt(),
                 List.of()
         );
     }
@@ -95,13 +105,16 @@ public class CommentService {
                 .map(child -> new ReplyCommentResponseDto(
                         child.getId(),
                         child.getContent(),
-                        child.getAnonymousNumber()))
+                        child.getAnonymousNumber(),
+                        child.getCreatedAt()
+                        ))
                 .toList();
 
         return new CommentResponseDto(
                 comment.getId(),
                 comment.getContent(),
                 comment.getAnonymousNumber(),
+                comment.getCreatedAt(),
                 replies);
     }
 

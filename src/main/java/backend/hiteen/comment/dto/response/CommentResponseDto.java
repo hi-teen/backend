@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -18,6 +19,8 @@ public class CommentResponseDto {
 
     @Schema(description = "익명 번호")
     private int anonymousNumber;
+
+    private LocalDateTime createdAt;
 
     //대댓글
     @Schema(description = "해당 댓글에 달린 대댓글 목록")

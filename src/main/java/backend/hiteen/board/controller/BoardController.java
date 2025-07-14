@@ -1,6 +1,7 @@
 package backend.hiteen.board.controller;
 
 
+import backend.hiteen.auth.security.CustomUserPrincipal;
 import backend.hiteen.board.dto.request.BoardCreateRequest;
 import backend.hiteen.board.dto.response.BoardResponse;
 import backend.hiteen.board.service.BoardService;
@@ -25,9 +26,9 @@ public class BoardController {
 
     @PostMapping
     @Operation(summary = "게시글 추가", description = "사용자가 게시글을 작성합니다.")
-    public ResponseEntity<BoardResponse> createBoard(@AuthenticationPrincipal String email,
+    public ResponseEntity<BoardResponse> createBoard(@AuthenticationPrincipal CustomUserPrincipal principal,
             @Valid @RequestBody BoardCreateRequest request){
-        BoardResponse response=boardService.createBoard(email,request);
+        BoardResponse response=boardService.createBoard(principal.getUsername(),request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -48,8 +49,8 @@ public class BoardController {
 
     @GetMapping("/my")
     @Operation(summary = "내가 작성한 게시글 목록 조회", description = "사용자가 자신이 작성한 게시글 목록을 조회합니다.")
-    public ResponseEntity<List<BoardResponse>> getAllMyBoards(@AuthenticationPrincipal String email){
-        List<BoardResponse> responses=boardService.getAllMyBoards(email);
+    public ResponseEntity<List<BoardResponse>> getAllMyBoards(@AuthenticationPrincipal CustomUserPrincipal principal){
+        List<BoardResponse> responses=boardService.getAllMyBoards(principal.getUsername());
         return ResponseEntity.ok(responses);
     }
 
