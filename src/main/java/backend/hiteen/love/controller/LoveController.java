@@ -1,5 +1,6 @@
 package backend.hiteen.love.controller;
 
+import backend.hiteen.auth.security.CustomUserPrincipal;
 import backend.hiteen.love.dto.LoveBoardResponse;
 import backend.hiteen.love.service.LoveService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,14 +22,16 @@ public class LoveController {
 
     @PostMapping
     @Operation(summary = "좋아요", description = "사용자가 좋아요를 추가하거나 취소합니다.")
-    public ResponseEntity<String> loveBoard(@AuthenticationPrincipal String email, @RequestParam Long boardId){
+    public ResponseEntity<String> loveBoard(@AuthenticationPrincipal CustomUserPrincipal principal, @RequestParam Long boardId){
+        String email = principal.getUsername();
         String message=loveService.updateLoveBoard(email,boardId);
         return ResponseEntity.ok(message);
     }
 
     @GetMapping("/my")
     @Operation(summary = "내가 좋아요 한 게시글 전체 조회", description = "사용자가 좋아요 한 게시글을 전체 조회합니다.")
-    public ResponseEntity<List<LoveBoardResponse>> getMyLovedBoards(@AuthenticationPrincipal String email){
+    public ResponseEntity<List<LoveBoardResponse>> getMyLovedBoards(@AuthenticationPrincipal CustomUserPrincipal principal){
+        String email = principal.getUsername();
         List<LoveBoardResponse> responses=loveService.getMyLovedBoards(email);
         return ResponseEntity.ok(responses);
     }

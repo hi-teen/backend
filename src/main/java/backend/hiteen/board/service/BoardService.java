@@ -21,11 +21,16 @@ public class BoardService {
 
     // 게시글 작성
     @Transactional
-    public BoardResponse createBoard(String email,final BoardCreateRequest request){
+    public BoardResponse createBoard(String email, final BoardCreateRequest request) {
 
-        Member member=memberRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("존재하지 않는 회원입니다."));
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-        Board board=Board.create(member,request.getTitle(),request.getContent(), request.getDisclosureStatus(), request.getCategory());
+        Board board = Board.create(member,
+                                   request.getTitle(),
+                                   request.getContent(),
+                                   request.getDisclosureStatus(),
+                                   request.getCategory());
         boardRepository.save(board);
 
         return new BoardResponse(board);
@@ -33,28 +38,29 @@ public class BoardService {
 
     //게시글 전체 조회 - 모든 사용자에 대한
     @Transactional(readOnly = true)
-    public List<BoardResponse> getAllBoards(){
-        List<Board> boards =boardRepository.findAll();
+    public List<BoardResponse> getAllBoards() {
+        List<Board> boards = boardRepository.findAll();
         return boards.stream().map(BoardResponse::new).toList();
 
     }
 
     //게시글 단일 조회 - 모든 사용자에 대한
     @Transactional
-    public BoardResponse getBoardById(Long boardId){
-        Board board=boardRepository.findById(boardId)
-                .orElseThrow(()->new IllegalArgumentException("게시글이 존재하지 않습니다."));
+    public BoardResponse getBoardById(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
         board.increaseViewCount();
         return new BoardResponse(board);
     }
 
     //게시글 전체 조회 - 내가 작성한
     @Transactional(readOnly = true)
-    public List<BoardResponse> getAllMyBoards(String email){
+    public List<BoardResponse> getAllMyBoards(String email) {
 
-        Member member=memberRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("존재하지 않는 회원입니다."));
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-        List<Board> boards=boardRepository.findAllByMember(member);
+        List<Board> boards = boardRepository.findAllByMember(member);
 
         return boards.stream().map(BoardResponse::new).toList();
     }

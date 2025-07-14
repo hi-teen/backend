@@ -35,15 +35,28 @@ public class CustomUserPrincipal implements UserDetails {
         return password;
     }
 
-    /** 인증 ID 로 사용할 필드 */
     @Override
     public String getUsername() {
         return email;
     }
 
-    // 계정 상태는 필요에 따라 변경
-    @Override public boolean isAccountNonExpired()     { return true; }
-    @Override public boolean isAccountNonLocked()      { return true; }
-    @Override public boolean isCredentialsNonExpired() { return true; }
-    @Override public boolean isEnabled()               { return true; }
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

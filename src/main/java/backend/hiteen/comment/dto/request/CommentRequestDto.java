@@ -2,8 +2,10 @@ package backend.hiteen.comment.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class CommentRequestDto {
 
     @Schema(description = "작성 게시글 id", example = "1")
