@@ -4,6 +4,8 @@ import backend.hiteen.auth.dto.response.TokenResponse;
 import backend.hiteen.auth.entity.RefreshToken;
 import backend.hiteen.auth.jwt.JwtTokenProvider;
 import backend.hiteen.auth.repository.RefreshTokenRepository;
+import backend.hiteen.common.response.ErrorCode;
+import backend.hiteen.global.exception.BusinessException;
 import backend.hiteen.member.entity.Member;
 import backend.hiteen.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +23,10 @@ public class AuthService {
 
     public TokenResponse login(String email, String password) {
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
         if (!member.getPassword().isPasswordMatch(password, passwordEncoder)) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new BusinessException(ErrorCode.MEMBER_PASSWORD_NOT_MATCH);
         }
 
         String accessToken = jwtTokenProvider.createAccessToken(email);
@@ -49,17 +51,17 @@ public class AuthService {
 
     public TokenResponse reissue(String refreshToken){
         if(!jwtTokenProvider.validateToken(refreshToken)){
-            throw new IllegalArgumentException("유효하지 않은 Refresh Token입니다.");
+            throw new BusinessException(ErrorCode.MEMBER_REFRESH_TOKEN_MISMATCH);
         }
 
         String email=jwtTokenProvider.getEmail(refreshToken);
         Member member=memberRepository.findByEmail(email)
-                .orElseThrow(()->new IllegalArgumentException("회원을 찾을 수 없습니다."));
+                .orElseThrow(()->new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
         RefreshToken saved=refreshTokenRepository.findByMember(member)
-                .orElseThrow(()->new IllegalArgumentException("저장된 Refresh Token이 없습니다."));
+                .orElseThrow(()->new BusinessException(ErrorCode.MEMBER_REFRESH_TOKEN_NOT_FOUND));
         if (!saved.getToken().equals(refreshToken)){
-            throw new IllegalArgumentException("Refresh Token이 일치하지 않습니다.");
+            throw new BusinessException(ErrorCode.MEMBER_REFRESH_TOKEN_MISMATCH);
         }
         String newAccessToken= jwtTokenProvider.createAccessToken(email);
         String newRefreshToken= jwtTokenProvider.createRefreshToken(email);
