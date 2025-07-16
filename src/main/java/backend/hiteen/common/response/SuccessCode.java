@@ -13,6 +13,7 @@ public enum SuccessCode {
     MEMBER_LOGGED_IN(HttpStatus.OK, "로그인이 완료되었습니다."),
     MEMBER_REISSUED(HttpStatus.OK, "토큰이 재발급되었습니다."),
     MEMBER_CURRENT_INFO_FETCHED(HttpStatus.OK, "현재 로그인 된 사용자입니다."),
+    MEMBER_LOGOUT(HttpStatus.OK, "로그아웃되었습니다."),
 
 
     //board
