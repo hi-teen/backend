@@ -28,9 +28,9 @@ public class BoardController {
 
     @PostMapping
     @Operation(summary = "게시글 추가", description = "사용자가 게시글을 작성합니다.")
-    public ResponseEntity<ApiResponse<BoardResponse>> createBoard(@AuthenticationPrincipal String email,
+    public ResponseEntity<ApiResponse<BoardResponse>> createBoard(@AuthenticationPrincipal CustomUserPrincipal principal,
                                                                  @Valid @RequestBody BoardCreateRequest request){
-        BoardResponse response=boardService.createBoard(email,request);
+        BoardResponse response=boardService.createBoard(principal.getUsername(),request);
         return ResponseEntity.status(SuccessCode.BOARD_CREATED.getStatus()).body(ApiResponse.success(SuccessCode.BOARD_CREATED,response));
     }
 
@@ -51,8 +51,8 @@ public class BoardController {
 
     @GetMapping("/my")
     @Operation(summary = "내가 작성한 게시글 목록 조회", description = "사용자가 자신이 작성한 게시글 목록을 조회합니다.")
-    public ResponseEntity<ApiResponse<List<BoardResponse>>> getAllMyBoards(@AuthenticationPrincipal String email){
-        List<BoardResponse> responses=boardService.getAllMyBoards(email);
+    public ResponseEntity<ApiResponse<List<BoardResponse>>> getAllMyBoards(@AuthenticationPrincipal CustomUserPrincipal principal){
+        List<BoardResponse> responses=boardService.getAllMyBoards(principal.getUsername());
         return ResponseEntity.status(SuccessCode.MY_BOARD_LIST_FETCHED.getStatus()).body(ApiResponse.success(SuccessCode.MY_BOARD_LIST_FETCHED, responses));
     }
 

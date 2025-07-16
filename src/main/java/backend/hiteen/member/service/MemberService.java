@@ -77,11 +77,6 @@ public class MemberService {
             validatePassword(newPw, request.getPasswordConfirm());
         }
 
-        String newNick = request.getNickname();
-        if (newNick != null && !member.getNickname().equals(newNick)) {
-            validateDuplicateNickname(newNick);
-        }
-
         member.updateProfile(
                 request.getName(),
                 request.getNickname(),

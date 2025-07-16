@@ -79,7 +79,6 @@ public class Member {
         if (password != null) this.password = new Password(password, encoder);
 
         this.name = name;
-        this.nickname = nickname;
         this.gradeNumber = gradeNumber;
         this.classNumber = classNumber;
     }

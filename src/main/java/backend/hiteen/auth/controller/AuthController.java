@@ -39,9 +39,8 @@ public class AuthController {
 
     @GetMapping("/me")
     @Operation(summary = "로그인 된 사용자 정보 확인", description = "현재 인증된 사용자의 이메일 정보를 확인합니다.")
-    public ResponseEntity<ApiResponse<String>> me() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        return ResponseEntity.status(SuccessCode.MEMBER_INFO_FETCHED.getStatus()).body(ApiResponse.success(SuccessCode.MEMBER_INFO_FETCHED,email));
+    public ResponseEntity<ApiResponse<String>> me(@AuthenticationPrincipal CustomUserPrincipal principal) {
+        return ResponseEntity.status(SuccessCode.MEMBER_CURRENT_INFO_FETCHED.getStatus()).body(ApiResponse.success(SuccessCode.MEMBER_CURRENT_INFO_FETCHED,principal.getUsername()));
     }
 
 }
