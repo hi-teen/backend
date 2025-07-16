@@ -1,5 +1,7 @@
 package backend.hiteen.member.controller;
 
+import backend.hiteen.common.response.ApiResponse;
+import backend.hiteen.common.response.SuccessCode;
 import backend.hiteen.member.dto.request.MemberCreateRequest;
 import backend.hiteen.member.dto.response.MemberResponse;
 import backend.hiteen.member.service.MemberService;
@@ -24,8 +26,8 @@ public class MemberController {
 
     @PostMapping("/sign-up")
     @Operation(summary = "회원가입",description = "사용자가 회원가입을 합니다. 비밀번호는 6자 이상이며, 영문자와 숫자를 최소 1자 이상 포함해야 합니다.")
-    public ResponseEntity<MemberResponse> signUp(@Valid @RequestBody MemberCreateRequest request){
+    public ResponseEntity<ApiResponse<MemberResponse>> signUp(@Valid @RequestBody MemberCreateRequest request){
         MemberResponse memberResponse= memberService.signUp(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(memberResponse);
+        return ResponseEntity.status(SuccessCode.MEMBER_REGISTERED.getStatus()).body(ApiResponse.success(SuccessCode.MEMBER_REGISTERED, memberResponse));
     }
 }
