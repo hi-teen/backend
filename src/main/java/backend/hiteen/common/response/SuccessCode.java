@@ -25,6 +25,9 @@ public enum SuccessCode {
     LOVED_BOARDS_FETCHED(HttpStatus.OK, "좋아요한 게시글 목록을 조회했습니다."),
 
     //scrap
+    SCRAP_CREATED(HttpStatus.CREATED, "게시글이 스크랩되었습니다."),
+    SCRAP_DELETED(HttpStatus.OK, "게시글 스크랩이 취소되었습니다."),
+    SCRAPED_BOARDS_FETCHED(HttpStatus.OK, "스크랩한 게시글 목록을 조회했습니다."),
 
     //message
     MESSAGE_ROOM_CREATED(HttpStatus.CREATED, "쪽지방이 생성되었습니다."),

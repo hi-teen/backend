@@ -1,6 +1,9 @@
 package backend.hiteen.scrap.controller;
 
+import backend.hiteen.common.response.ApiResponse;
+import backend.hiteen.common.response.SuccessCode;
 import backend.hiteen.scrap.dto.ScrapBoardResponse;
+import backend.hiteen.scrap.entity.ScrapActionResult;
 import backend.hiteen.scrap.service.ScrapService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,15 +24,20 @@ public class ScrapController {
 
     @PostMapping
     @Operation(summary = "스크랩", description = "사용자가 게시글을 스크랩/스크랩 취소 합니다.")
-    public ResponseEntity<String> scrapBoard(@AuthenticationPrincipal String email, @RequestParam Long boardId){
-        String message=scrapService.updateScrapBoard(email,boardId);
-        return ResponseEntity.ok(message);
+    public ResponseEntity<ApiResponse<String>> scrapBoard(@AuthenticationPrincipal String email, @RequestParam Long boardId){
+        ScrapActionResult result=scrapService.updateScrapBoard(email,boardId);
+
+        if (result==ScrapActionResult.CREATED){
+            return ResponseEntity.status(SuccessCode.SCRAP_CREATED.getStatus()).body(ApiResponse.success(SuccessCode.SCRAP_CREATED));
+        } else{
+            return ResponseEntity.status(SuccessCode.SCRAP_DELETED.getStatus()).body(ApiResponse.success(SuccessCode.SCRAP_DELETED));
+        }
     }
 
     @GetMapping("/my")
     @Operation(summary = "내가 스크랩 한 게시글 전체 조회", description = "사용자가 스크랩 한 게시글을 전체 조회합니다.")
-    public ResponseEntity<List<ScrapBoardResponse>> getMyScrapedBoards(@AuthenticationPrincipal String email){
+    public ResponseEntity<ApiResponse<List<ScrapBoardResponse>>> getMyScrapedBoards(@AuthenticationPrincipal String email){
         List<ScrapBoardResponse> responses=scrapService.getMyScrapedBoards(email);
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.status(SuccessCode.SCRAPED_BOARDS_FETCHED.getStatus()).body(ApiResponse.success(SuccessCode.SCRAPED_BOARDS_FETCHED, responses));
     }
 }
