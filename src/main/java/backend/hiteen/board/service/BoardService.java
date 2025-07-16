@@ -4,6 +4,8 @@ import backend.hiteen.board.dto.request.BoardCreateRequest;
 import backend.hiteen.board.dto.response.BoardResponse;
 import backend.hiteen.board.entity.Board;
 import backend.hiteen.board.repository.BoardRepository;
+import backend.hiteen.common.response.ErrorCode;
+import backend.hiteen.global.exception.BusinessException;
 import backend.hiteen.member.entity.Member;
 import backend.hiteen.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,7 @@ public class BoardService {
     @Transactional
     public BoardResponse createBoard(String email,final BoardCreateRequest request){
 
-        Member member=memberRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("존재하지 않는 회원입니다."));
+        Member member=memberRepository.findByEmail(email).orElseThrow(()->new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
         Board board=Board.create(member,request.getTitle(),request.getContent(), request.getDisclosureStatus(), request.getCategory());
         boardRepository.save(board);
@@ -43,7 +45,7 @@ public class BoardService {
     @Transactional
     public BoardResponse getBoardById(Long boardId){
         Board board=boardRepository.findById(boardId)
-                .orElseThrow(()->new IllegalArgumentException("게시글이 존재하지 않습니다."));
+                .orElseThrow(()->new BusinessException(ErrorCode.BOARD_NOT_FOUND));
         board.increaseViewCount();
         return new BoardResponse(board);
     }
@@ -52,7 +54,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public List<BoardResponse> getAllMyBoards(String email){
 
-        Member member=memberRepository.findByEmail(email).orElseThrow(()->new IllegalArgumentException("존재하지 않는 회원입니다."));
+        Member member=memberRepository.findByEmail(email).orElseThrow(()->new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
         List<Board> boards=boardRepository.findAllByMember(member);
 

@@ -13,6 +13,10 @@ public enum SuccessCode {
     MEMBER_INFO_FETCHED(HttpStatus.OK, "회원 정보를 조회했습니다."),
 
     //board
+    BOARD_CREATED(HttpStatus.CREATED, "게시글이 등록되었습니다."),
+    BOARD_DETAIL_FETCHED(HttpStatus.OK, "게시글을 단일 조회했습니다."),
+    BOARD_ALL_FETCHED(HttpStatus.OK, "모든 게시글 목록을 조회했습니다."),
+    MY_BOARD_LIST_FETCHED(HttpStatus.OK, "내가 작성한 게시글 목록을 조회했습니다."),
 
     //comment
     COMMENT_CREATED(HttpStatus.CREATED, "댓글이 등록되었습니다."),
