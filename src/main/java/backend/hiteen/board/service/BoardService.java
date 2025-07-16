@@ -23,11 +23,15 @@ public class BoardService {
 
     // 게시글 작성
     @Transactional
-    public BoardResponse createBoard(String email,final BoardCreateRequest request){
+    public BoardResponse createBoard(String email, final BoardCreateRequest request) {
 
         Member member=memberRepository.findByEmail(email).orElseThrow(()->new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
-        Board board=Board.create(member,request.getTitle(),request.getContent(), request.getDisclosureStatus(), request.getCategory());
+        Board board = Board.create(member,
+                                   request.getTitle(),
+                                   request.getContent(),
+                                   request.getDisclosureStatus(),
+                                   request.getCategory());
         boardRepository.save(board);
 
         return new BoardResponse(board);
@@ -35,8 +39,8 @@ public class BoardService {
 
     //게시글 전체 조회 - 모든 사용자에 대한
     @Transactional(readOnly = true)
-    public List<BoardResponse> getAllBoards(){
-        List<Board> boards =boardRepository.findAll();
+    public List<BoardResponse> getAllBoards() {
+        List<Board> boards = boardRepository.findAll();
         return boards.stream().map(BoardResponse::new).toList();
 
     }
@@ -52,11 +56,11 @@ public class BoardService {
 
     //게시글 전체 조회 - 내가 작성한
     @Transactional(readOnly = true)
-    public List<BoardResponse> getAllMyBoards(String email){
+    public List<BoardResponse> getAllMyBoards(String email) {
 
         Member member=memberRepository.findByEmail(email).orElseThrow(()->new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
-        List<Board> boards=boardRepository.findAllByMember(member);
+        List<Board> boards = boardRepository.findAllByMember(member);
 
         return boards.stream().map(BoardResponse::new).toList();
     }

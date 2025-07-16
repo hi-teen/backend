@@ -1,6 +1,7 @@
 package backend.hiteen.board.controller;
 
 
+import backend.hiteen.auth.security.CustomUserPrincipal;
 import backend.hiteen.board.dto.request.BoardCreateRequest;
 import backend.hiteen.board.dto.response.BoardResponse;
 import backend.hiteen.board.service.BoardService;

@@ -64,5 +64,24 @@ public class Member {
         this.gradeNumber = gradeNumber;
     }
 
+    public void updateProfile(
+            String name,
+            String nickname,
+            String email,
+            String password,
+            String passwordConfirm,
+            int gradeNumber,
+            int classNumber,
+            PasswordEncoder encoder
+    ) {
+        if (email != null) this.email = email;
+
+        if (password != null) this.password = new Password(password, encoder);
+
+        this.name = name;
+        this.nickname = nickname;
+        this.gradeNumber = gradeNumber;
+        this.classNumber = classNumber;
+    }
 
 }

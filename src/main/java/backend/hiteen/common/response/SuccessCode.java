@@ -7,10 +7,13 @@ import org.springframework.http.HttpStatus;
 public enum SuccessCode {
 
     //member
+    MEMBER_FETCHED(HttpStatus.OK, "회원 정보를 조회합니다."),
+    MEMBER_UPDATED(HttpStatus.OK, "회원 정보를 수정합니다."),
     MEMBER_REGISTERED(HttpStatus.CREATED, "회원가입이 완료되었습니다."),
     MEMBER_LOGGED_IN(HttpStatus.OK, "로그인이 완료되었습니다."),
     MEMBER_REISSUED(HttpStatus.OK, "토큰이 재발급되었습니다."),
     MEMBER_INFO_FETCHED(HttpStatus.OK, "회원 정보를 조회했습니다."),
+
 
     //board
     BOARD_CREATED(HttpStatus.CREATED, "게시글이 등록되었습니다."),

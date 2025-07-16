@@ -6,8 +6,10 @@ import backend.hiteen.externalapi.school.exception.SchoolNotFoundException;
 import backend.hiteen.externalapi.school.reporitory.SchoolRepository;
 import backend.hiteen.global.exception.BusinessException;
 import backend.hiteen.member.dto.request.MemberCreateRequest;
+import backend.hiteen.member.dto.request.MemberUpdateRequest;
 import backend.hiteen.member.dto.response.MemberResponse;
 import backend.hiteen.member.entity.Member;
+import backend.hiteen.member.exception.MemberNotFoundException;
 import backend.hiteen.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,7 +32,7 @@ public class MemberService {
 
         School school = schoolRepository.findById(request.getSchoolId())
                 .orElseThrow(SchoolNotFoundException::new);
-        Member member=request.toEntity(school, passwordEncoder);
+        Member member = request.toEntity(school, passwordEncoder);
 
         memberRepository.save(member);
         return new MemberResponse(member);
@@ -50,5 +52,47 @@ public class MemberService {
         if(!password.equals(passwordConfirm)){
             throw new BusinessException(ErrorCode.MEMBER_PASSWORD_NOT_MATCH);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public MemberResponse getMember(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(MemberNotFoundException::new);
+        return new MemberResponse(member);
+    }
+
+    @Transactional
+    public MemberResponse updateMember(Long memberId, MemberUpdateRequest request) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(MemberNotFoundException::new);
+
+        String newEmail = request.getEmail();
+        if (newEmail != null && !newEmail.isBlank()
+                && !member.getEmail().equals(newEmail)) {
+            validateDuplicateEmail(newEmail);
+        }
+
+        String newPw = request.getPassword();
+        if (newPw != null && !newPw.isBlank()) {
+            validatePassword(newPw, request.getPasswordConfirm());
+        }
+
+        String newNick = request.getNickname();
+        if (newNick != null && !member.getNickname().equals(newNick)) {
+            validateDuplicateNickname(newNick);
+        }
+
+        member.updateProfile(
+                request.getName(),
+                request.getNickname(),
+                request.getEmail(),
+                request.getPassword(),
+                request.getPasswordConfirm(),
+                request.getGradeNumber(),
+                request.getClassNumber(),
+                passwordEncoder
+        );
+
+        return new MemberResponse(member);
     }
 }

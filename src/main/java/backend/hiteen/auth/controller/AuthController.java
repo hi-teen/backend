@@ -3,6 +3,7 @@ package backend.hiteen.auth.controller;
 import backend.hiteen.auth.dto.request.LoginRequest;
 import backend.hiteen.auth.dto.request.TokenReissueRequest;
 import backend.hiteen.auth.dto.response.TokenResponse;
+import backend.hiteen.auth.security.CustomUserPrincipal;
 import backend.hiteen.auth.service.AuthService;
 import backend.hiteen.common.response.ApiResponse;
 import backend.hiteen.common.response.SuccessCode;
@@ -11,7 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

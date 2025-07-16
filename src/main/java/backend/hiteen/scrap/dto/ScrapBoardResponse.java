@@ -25,7 +25,7 @@ public class ScrapBoardResponse {
         this.content= board.getContent();
         this.loveCount= board.getLoveCount();
         this.scrapCount= board.getScrapCount();
-        this.createdDate=board.getCreatedDate();
+        this.createdDate=board.getCreatedAt();
     }
 
 }
