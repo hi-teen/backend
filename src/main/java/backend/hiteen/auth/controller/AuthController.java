@@ -7,6 +7,7 @@ import backend.hiteen.auth.security.CustomUserPrincipal;
 import backend.hiteen.auth.service.AuthService;
 import backend.hiteen.common.response.ApiResponse;
 import backend.hiteen.common.response.SuccessCode;
+import backend.hiteen.member.entity.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -41,6 +42,13 @@ public class AuthController {
     @Operation(summary = "로그인 된 사용자 정보 확인", description = "현재 인증된 사용자의 이메일 정보를 확인합니다.")
     public ResponseEntity<ApiResponse<String>> me(@AuthenticationPrincipal CustomUserPrincipal principal) {
         return ResponseEntity.status(SuccessCode.MEMBER_CURRENT_INFO_FETCHED.getStatus()).body(ApiResponse.success(SuccessCode.MEMBER_CURRENT_INFO_FETCHED,principal.getUsername()));
+    }
+
+    @PostMapping("/logout")
+    @Operation(summary = "로그아웃", description = "사용자가 로그아웃합니다.")
+    public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal CustomUserPrincipal principal){
+        authService.logout(principal.getUsername());
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.MEMBER_LOGOUT));
     }
 
 }

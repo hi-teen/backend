@@ -71,4 +71,11 @@ public class AuthService {
 
         return new TokenResponse(newAccessToken,newRefreshToken);
     }
+
+    //로그아웃
+    public void logout(String email){
+        Member member=memberRepository.findByEmail(email).orElseThrow(()-> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+
+        refreshTokenRepository.findByMember(member).ifPresent(refreshTokenRepository::delete);
+    }
 }
