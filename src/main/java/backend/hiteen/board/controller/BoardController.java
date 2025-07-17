@@ -63,4 +63,11 @@ public class BoardController {
         return ResponseEntity.status(SuccessCode.POPULAR_BOARD_ALL_FETCHED.getStatus()).body(ApiResponse.success(SuccessCode.POPULAR_BOARD_ALL_FETCHED, responses));
     }
 
+    @GetMapping("/search")
+    @Operation(summary ="게시글 검색", description = "게시글을 검색합니다.")
+    public ResponseEntity<ApiResponse<List<BoardResponse>>> searchBoards(@RequestParam("keyword") String keyword){
+        List<BoardResponse> responses=boardService.searchBoards(keyword);
+        return ResponseEntity.status(SuccessCode.SEARCHED_BOARD_LIST_FETCHED.getStatus()).body(ApiResponse.success(SuccessCode.SEARCHED_BOARD_LIST_FETCHED, responses));
+    }
+
 }
