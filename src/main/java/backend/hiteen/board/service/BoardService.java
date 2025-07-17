@@ -9,6 +9,7 @@ import backend.hiteen.global.exception.BusinessException;
 import backend.hiteen.member.entity.Member;
 import backend.hiteen.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.converters.models.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,6 +71,18 @@ public class BoardService {
     public List<BoardResponse> getPopularBoards(){
         List<Board> popularBoards=boardRepository.findPopularBoards();
         return popularBoards.stream().map(BoardResponse::new).toList();
+    }
+
+
+    //게시글 검색
+    @Transactional
+    public List<BoardResponse> searchBoards(String keyword){
+        if (keyword == null || keyword.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.KEYWORD_REQUIRED);
+        }
+
+        List<Board> boards=boardRepository.searchByKeyword(keyword);
+        return boards.stream().map(BoardResponse::new).toList();
     }
 
 }
