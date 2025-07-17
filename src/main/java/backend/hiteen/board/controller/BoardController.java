@@ -56,4 +56,11 @@ public class BoardController {
         return ResponseEntity.status(SuccessCode.MY_BOARD_LIST_FETCHED.getStatus()).body(ApiResponse.success(SuccessCode.MY_BOARD_LIST_FETCHED, responses));
     }
 
+    @GetMapping("/popular")
+    @Operation(summary ="인기게시글 목록 조회", description = "인기게시글을 조회합니다.")
+    public ResponseEntity<ApiResponse<List<BoardResponse>>> getPopularBoards(){
+        List<BoardResponse> responses=boardService.getPopularBoards();
+        return ResponseEntity.status(SuccessCode.POPULAR_BOARD_ALL_FETCHED.getStatus()).body(ApiResponse.success(SuccessCode.POPULAR_BOARD_ALL_FETCHED, responses));
+    }
+
 }

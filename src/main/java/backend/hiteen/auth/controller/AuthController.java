@@ -7,7 +7,6 @@ import backend.hiteen.auth.security.CustomUserPrincipal;
 import backend.hiteen.auth.service.AuthService;
 import backend.hiteen.common.response.ApiResponse;
 import backend.hiteen.common.response.SuccessCode;
-import backend.hiteen.member.entity.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

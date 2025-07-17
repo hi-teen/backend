@@ -65,4 +65,11 @@ public class BoardService {
         return boards.stream().map(BoardResponse::new).toList();
     }
 
+    //인기게시글 조회
+    @Transactional
+    public List<BoardResponse> getPopularBoards(){
+        List<Board> popularBoards=boardRepository.findPopularBoards();
+        return popularBoards.stream().map(BoardResponse::new).toList();
+    }
+
 }
