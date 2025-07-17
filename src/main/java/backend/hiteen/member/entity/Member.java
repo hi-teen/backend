@@ -34,9 +34,6 @@ public class Member {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
-    private String nickname;
-
     @ManyToOne
     @JoinColumn(name = "school_id")
     private School school;
@@ -57,16 +54,33 @@ public class Member {
     private List<Scrap> scraps;
 
     @Builder
-    private Member(String email, String password, String name, String nickname,
+    private Member(String email, String password, String name,
                    School school, int gradeNumber, int classNumber, PasswordEncoder encoder) {
         this.email = email;
         this.password = new Password(password, encoder);
         this.name = name;
-        this.nickname = nickname;
         this.school = school;
         this.classNumber = classNumber;
         this.gradeNumber = gradeNumber;
     }
 
+    public void updateProfile(
+            String name,
+            String nickname,
+            String email,
+            String password,
+            String passwordConfirm,
+            int gradeNumber,
+            int classNumber,
+            PasswordEncoder encoder
+    ) {
+        if (email != null) this.email = email;
+
+        if (password != null) this.password = new Password(password, encoder);
+
+        this.name = name;
+        this.gradeNumber = gradeNumber;
+        this.classNumber = classNumber;
+    }
 
 }

@@ -9,16 +9,28 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다."),
 
     //member
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원이 존재하지 않습니다."),
+    MEMBER_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 존재하는 이메일입니다."),
+    MEMBER_PASSWORD_NOT_MATCH(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    MEMBER_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "로그인 정보가 유효하지 않습니다."),
+    MEMBER_REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "저장된 Refresh Token이 없습니다."),
+    MEMBER_REFRESH_TOKEN_MISMATCH(HttpStatus.UNAUTHORIZED, "Refresh Token이 일치하지 않습니다."),
 
     //board
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."),
+    BOARD_CREATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "게시글 작성에 실패했습니다."),
+    KEYWORD_REQUIRED(HttpStatus.BAD_REQUEST, "검색어를 입력해주세요."),
 
     //comment
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글이 존재하지 않습니다."),
 
     //love
+    LOVE_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 좋아요한 게시글입니다."),
+    LOVE_NOT_FOUND(HttpStatus.NOT_FOUND, "좋아요가 존재하지 않습니다."),
 
     //scrap
+    SCRAP_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 스크랩한 게시글입니다."),
+    SCRAP_NOT_FOUND(HttpStatus.NOT_FOUND, "스크랩 정보가 존재하지 않습니다."),
 
     //message
     MESSAGE_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "쪽지방을 찾을 수 없습니다."),

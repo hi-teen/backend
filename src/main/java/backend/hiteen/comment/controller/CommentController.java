@@ -1,5 +1,6 @@
 package backend.hiteen.comment.controller;
 
+import backend.hiteen.auth.security.CustomUserPrincipal;
 import backend.hiteen.comment.dto.request.CommentRequestDto;
 import backend.hiteen.comment.dto.request.ReplyCommentRequestDto;
 import backend.hiteen.comment.dto.response.CommentResponseDto;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +20,6 @@ import java.util.List;
 @RequestMapping("/api/v1/comments")
 @RequiredArgsConstructor
 @Tag(name = "Comment", description = "댓글 API")
-//TODO: @Operation(summary, description) 추가
 public class CommentController {
 
     private final CommentService commentService;
@@ -26,8 +27,14 @@ public class CommentController {
     @PostMapping
     @Operation(summary = "댓글 작성", description = "게시글에 댓글을 작성합니다.")
     public ResponseEntity<ApiResponse<CommentResponseDto>> addComment(
-            @RequestBody CommentRequestDto request) {
-        CommentResponseDto response = commentService.addComment(request);
+            @AuthenticationPrincipal CustomUserPrincipal principal,
+            @RequestBody CommentRequestDto request)
+    {
+        CommentResponseDto response = commentService.addComment(
+                principal.getId(),
+                request.getBoardId(),
+                request.getContent()
+        );
 
         return ResponseEntity
                 .status(SuccessCode.COMMENT_CREATED.getStatus())
@@ -37,9 +44,15 @@ public class CommentController {
     @PostMapping("/{commentId}/replies")
     @Operation(summary = "대댓글 작성", description = "특정 댓글에 대한 대댓글을 작성합니다.")
     public ResponseEntity<ApiResponse<CommentResponseDto>> addReplyComment(
+            @AuthenticationPrincipal CustomUserPrincipal principal,
             @PathVariable Long commentId,
-            @RequestBody ReplyCommentRequestDto request) {
-        CommentResponseDto response = commentService.addReplyComment(commentId, request);
+            @RequestBody ReplyCommentRequestDto request)
+    {
+        CommentResponseDto response = commentService.addReplyComment
+                (principal.getId(),
+                 commentId,
+                 request.getContent()
+                );
 
         return ResponseEntity
                 .status(SuccessCode.REPLY_CREATED.getStatus())

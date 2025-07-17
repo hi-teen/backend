@@ -19,11 +19,11 @@ public class BaseTimeEntity {
     @CreatedDate
     @Column(updatable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createdDate;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updatedDate;
+    private LocalDateTime updatedAt;
 
 
 
