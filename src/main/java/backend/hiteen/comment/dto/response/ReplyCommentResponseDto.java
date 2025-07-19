@@ -8,18 +8,20 @@ import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
-// TODO: 모든 필드에 @Schema(description, example) 작성 필요
 public class ReplyCommentResponseDto {
 
-    @Schema(description = "대댓글 id", example = "2")
+    @Schema(description = "대댓글 id")
     private Long replyId;
 
-    @Schema(description = "대댓글 내용", example = "저도요!")
+    @Schema(description = "대댓글 내용")
     private String content;
 
     @Schema(description = "익명 번호", example = "3")
     private int anonymousNumber;
 
     private LocalDateTime createdAt;
+
+    private int likeCount;
+    private boolean likedByMe;
 
 }
