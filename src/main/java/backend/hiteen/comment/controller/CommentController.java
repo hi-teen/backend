@@ -3,6 +3,7 @@ package backend.hiteen.comment.controller;
 import backend.hiteen.auth.security.CustomUserPrincipal;
 import backend.hiteen.comment.dto.request.CommentRequestDto;
 import backend.hiteen.comment.dto.request.ReplyCommentRequestDto;
+import backend.hiteen.comment.dto.response.CommentLikeResponse;
 import backend.hiteen.comment.dto.response.CommentResponseDto;
 import backend.hiteen.comment.service.CommentService;
 import backend.hiteen.common.response.ApiResponse;
@@ -28,8 +29,7 @@ public class CommentController {
     @Operation(summary = "댓글 작성", description = "게시글에 댓글을 작성합니다.")
     public ResponseEntity<ApiResponse<CommentResponseDto>> addComment(
             @AuthenticationPrincipal CustomUserPrincipal principal,
-            @RequestBody CommentRequestDto request)
-    {
+            @RequestBody CommentRequestDto request) {
         CommentResponseDto response = commentService.addComment(
                 principal.getId(),
                 request.getBoardId(),
@@ -46,8 +46,7 @@ public class CommentController {
     public ResponseEntity<ApiResponse<CommentResponseDto>> addReplyComment(
             @AuthenticationPrincipal CustomUserPrincipal principal,
             @PathVariable Long commentId,
-            @RequestBody ReplyCommentRequestDto request)
-    {
+            @RequestBody ReplyCommentRequestDto request) {
         CommentResponseDto response = commentService.addReplyComment
                 (principal.getId(),
                  commentId,
@@ -61,12 +60,30 @@ public class CommentController {
 
     @GetMapping("/board/{boardId}")
     @Operation(summary = "댓글 조회", description = "게시글에 달린 댓글과 대댓글을 모두 조회합니다.")
-    public ResponseEntity<ApiResponse<List<CommentResponseDto>>> getComments(@PathVariable Long boardId) {
-        List<CommentResponseDto> comments = commentService.getComments(boardId);
+    public ResponseEntity<ApiResponse<List<CommentResponseDto>>> getComments(
+            @AuthenticationPrincipal CustomUserPrincipal principal,
+            @PathVariable Long boardId) {
+        Long memberId = principal != null ? principal.getId() : null;
+        List<CommentResponseDto> comments = commentService.getComments(boardId, memberId);
 
         return ResponseEntity
                 .status(SuccessCode.COMMENT_FETCHED.getStatus())
                 .body(ApiResponse.success(SuccessCode.COMMENT_FETCHED, comments));
     }
 
+    @PostMapping({"/{commentId}/like"})
+    @Operation(summary = "댓글 좋아요", description = "댓글, 대댓글 좋아요")
+    public ResponseEntity<ApiResponse<CommentLikeResponse>> toggleLike(
+            @AuthenticationPrincipal CustomUserPrincipal principal,
+            @PathVariable Long commentId
+    ) {
+        CommentLikeResponse response = commentService.toggleLike(commentId, principal.getId());
+        SuccessCode code = response.isLiked() ?
+                SuccessCode.COMMENT_LIKED_CREATED :
+                SuccessCode.COMMENT_LIKED_DELETED;
+
+        return ResponseEntity
+                .status(code.getStatus())
+                .body(ApiResponse.success(code, response));
+    }
 }
