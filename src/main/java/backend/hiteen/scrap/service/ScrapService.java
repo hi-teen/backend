@@ -2,10 +2,13 @@ package backend.hiteen.scrap.service;
 
 import backend.hiteen.board.entity.Board;
 import backend.hiteen.board.repository.BoardRepository;
+import backend.hiteen.common.response.ErrorCode;
+import backend.hiteen.global.exception.BusinessException;
 import backend.hiteen.member.entity.Member;
 import backend.hiteen.member.repository.MemberRepository;
 import backend.hiteen.scrap.dto.ScrapBoardResponse;
 import backend.hiteen.scrap.entity.Scrap;
+import backend.hiteen.scrap.entity.ScrapActionResult;
 import backend.hiteen.scrap.repository.ScrapRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,19 +26,21 @@ public class ScrapService {
 
     //스크랩 추가/취소
     @Transactional
-    public String updateScrapBoard(String email, Long boardId){
+    public ScrapActionResult updateScrapBoard(String email, Long boardId){
         Member member=memberRepository.findByEmail(email)
-                .orElseThrow(()->new IllegalArgumentException("사용자가 존재하지 않습니다."));
+                .orElseThrow(()->new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
         Board board=boardRepository.findById(boardId)
-                .orElseThrow(()-> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+                .orElseThrow(()-> new BusinessException(ErrorCode.BOARD_NOT_FOUND));
 
         if (!isBoardScrapped(member, board)){
             board.increaseScrapCount();
-            return createScrap(member,board);
+            createScrap(member,board);
+            return ScrapActionResult.CREATED;
         }
         board.decreaseScrapCount();
-        return deleteScrap(member,board);
+        deleteScrap(member,board);
+        return ScrapActionResult.DELETED;
     }
 
     //내가 스크랩 한 게시글 조회
@@ -43,7 +48,7 @@ public class ScrapService {
     public List<ScrapBoardResponse> getMyScrapedBoards(String email){
 
         Member member=memberRepository.findByEmail(email)
-                .orElseThrow(()->new IllegalArgumentException("사용자가 존재하지 않습니다."));
+                .orElseThrow(()->new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
         List<Board> boards=scrapRepository.findScrapedBoardsByMemberId(member.getId());
 
@@ -54,16 +59,14 @@ public class ScrapService {
         return scrapRepository.findByMemberAndBoard(member,board).isPresent();
     }
 
-    private String createScrap(Member member, Board board){
+    private void createScrap(Member member, Board board){
         Scrap scrap=Scrap.create(member,board);
         scrapRepository.save(scrap);
-        return "스크랩이 되었습니다.";
     }
 
-    private String deleteScrap(Member member, Board board){
+    private void deleteScrap(Member member, Board board){
         Scrap scrap=scrapRepository.findByMemberAndBoard(member, board)
-                .orElseThrow(()-> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+                .orElseThrow(()-> new BusinessException(ErrorCode.SCRAP_NOT_FOUND));
         scrapRepository.delete(scrap);
-        return "스크랩이 취소되었습니다.";
     }
 }

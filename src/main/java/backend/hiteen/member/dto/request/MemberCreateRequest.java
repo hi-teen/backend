@@ -27,9 +27,6 @@ public class MemberCreateRequest {
     @NotBlank(message = "이름을 입력해주세요.")
     private String name;
 
-    @NotBlank(message = "닉네임을 입력해주세요.")
-    private String nickname;
-
     @NotNull(message = "학교를 입력해주세요.")
     private Long schoolId;
 
@@ -42,7 +39,6 @@ public class MemberCreateRequest {
                 .email(email)
                 .password(password)
                 .name(name)
-                .nickname(nickname)
                 .school(school)
                 .gradeNumber(gradeNumber)
                 .classNumber(classNumber)

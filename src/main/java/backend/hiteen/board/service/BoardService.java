@@ -4,9 +4,12 @@ import backend.hiteen.board.dto.request.BoardCreateRequest;
 import backend.hiteen.board.dto.response.BoardResponse;
 import backend.hiteen.board.entity.Board;
 import backend.hiteen.board.repository.BoardRepository;
+import backend.hiteen.common.response.ErrorCode;
+import backend.hiteen.global.exception.BusinessException;
 import backend.hiteen.member.entity.Member;
 import backend.hiteen.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.converters.models.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +26,7 @@ public class BoardService {
     @Transactional
     public BoardResponse createBoard(String email, final BoardCreateRequest request) {
 
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        Member member=memberRepository.findByEmail(email).orElseThrow(()->new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
         Board board = Board.create(member,
                                    request.getTitle(),
@@ -46,9 +48,9 @@ public class BoardService {
 
     //게시글 단일 조회 - 모든 사용자에 대한
     @Transactional
-    public BoardResponse getBoardById(Long boardId) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+    public BoardResponse getBoardById(Long boardId){
+        Board board=boardRepository.findById(boardId)
+                .orElseThrow(()->new BusinessException(ErrorCode.BOARD_NOT_FOUND));
         board.increaseViewCount();
         return new BoardResponse(board);
     }
@@ -57,11 +59,29 @@ public class BoardService {
     @Transactional(readOnly = true)
     public List<BoardResponse> getAllMyBoards(String email) {
 
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        Member member=memberRepository.findByEmail(email).orElseThrow(()->new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
         List<Board> boards = boardRepository.findAllByMember(member);
 
+        return boards.stream().map(BoardResponse::new).toList();
+    }
+
+    //인기게시글 조회
+    @Transactional
+    public List<BoardResponse> getPopularBoards(){
+        List<Board> popularBoards=boardRepository.findPopularBoards();
+        return popularBoards.stream().map(BoardResponse::new).toList();
+    }
+
+
+    //게시글 검색
+    @Transactional
+    public List<BoardResponse> searchBoards(String keyword){
+        if (keyword == null || keyword.trim().isEmpty()) {
+            throw new BusinessException(ErrorCode.KEYWORD_REQUIRED);
+        }
+
+        List<Board> boards=boardRepository.searchByKeyword(keyword);
         return boards.stream().map(BoardResponse::new).toList();
     }
 
