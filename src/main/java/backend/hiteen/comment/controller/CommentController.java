@@ -53,7 +53,7 @@ public class CommentController {
                 principal.getId(),
                 commentId,
                 request.getContent()
-                );
+        );
 
         return ResponseEntity
                 .status(SuccessCode.REPLY_CREATED.getStatus())
@@ -98,5 +98,17 @@ public class CommentController {
         return ResponseEntity
                 .status(code.getStatus())
                 .body(ApiResponse.success(code, response));
+    }
+
+    @DeleteMapping("/{commentId}")
+    @Operation(summary = "댓글/대댓글 삭제", description = "댓글/ 대댓글을 삭제합니다.")
+    public ResponseEntity<ApiResponse<Void>> deleteComment(
+            @AuthenticationPrincipal CustomUserPrincipal principal,
+            @PathVariable Long commentId
+    ) {
+        commentService.deleteComment(principal.getId(), commentId);
+        return ResponseEntity
+                .status(SuccessCode.COMMENT_DELETED.getStatus())
+                .body(ApiResponse.success(SuccessCode.COMMENT_DELETED, null));
     }
 }

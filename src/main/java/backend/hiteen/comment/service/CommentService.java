@@ -9,6 +9,7 @@ import backend.hiteen.comment.dto.response.ReplyCommentResponseDto;
 import backend.hiteen.comment.entity.Comment;
 import backend.hiteen.comment.entity.CommentLike;
 import backend.hiteen.comment.exception.CommentNotFoundException;
+import backend.hiteen.comment.exception.CommentNotOwnerException;
 import backend.hiteen.comment.repository.CommentLikeRepository;
 import backend.hiteen.comment.repository.CommentRepository;
 import backend.hiteen.member.entity.Member;
@@ -159,6 +160,18 @@ public class CommentService {
 
         int likeCount = commentLikeRepository.countByComment(comment);
         return new CommentLikeResponse(likeCount, liked);
+    }
+
+    @Transactional
+    public void deleteComment(Long memberId, Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(CommentNotFoundException::new);
+
+        if (!comment.getMember().getId().equals(memberId)) {
+            throw new CommentNotOwnerException();
+        }
+
+        commentRepository.delete(comment);
     }
 
     private CommentResponseDto covertToDto(Comment comment, Member member) {
