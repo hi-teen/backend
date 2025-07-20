@@ -23,6 +23,7 @@ public enum SuccessCode {
     MY_BOARD_LIST_FETCHED(HttpStatus.OK, "내가 작성한 게시글 목록을 조회했습니다."),
     POPULAR_BOARD_ALL_FETCHED(HttpStatus.OK, "모든 인기 게시글을 조회했습니다."),
     SEARCHED_BOARD_LIST_FETCHED(HttpStatus.OK, "검색된 게시글 목록을 조회했습니다."),
+    BOARD_DELETED(HttpStatus.OK, "게시글이 성공적으로 삭제되었습니다."),
 
     //comment
     COMMENT_CREATED(HttpStatus.CREATED, "댓글이 등록되었습니다."),
