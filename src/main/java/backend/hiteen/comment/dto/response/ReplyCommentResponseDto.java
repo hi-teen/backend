@@ -23,5 +23,6 @@ public class ReplyCommentResponseDto {
 
     private int likeCount;
     private boolean likedByMe;
+    private boolean idBoardWriter;
 
 }

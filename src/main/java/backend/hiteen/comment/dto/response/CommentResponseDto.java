@@ -24,6 +24,7 @@ public class CommentResponseDto {
 
     private int likeCount;
     private boolean likedByMe;
+    private boolean idBoardWriter;
 
     //대댓글
     @Schema(description = "해당 댓글에 달린 대댓글 목록")
