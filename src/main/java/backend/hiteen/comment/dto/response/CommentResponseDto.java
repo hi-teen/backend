@@ -11,10 +11,10 @@ import java.util.List;
 @AllArgsConstructor
 public class CommentResponseDto {
 
-    @Schema(description = "댓글 id", example = "1")
+    @Schema(description = "댓글 id")
     private Long commentId;
 
-    @Schema(description = "댓글 내용", example = "낼 학교 기대 돼!")
+    @Schema(description = "댓글 내용")
     private String content;
 
     @Schema(description = "익명 번호")
@@ -22,7 +22,12 @@ public class CommentResponseDto {
 
     private LocalDateTime createdAt;
 
+    private int likeCount;
+    private boolean likedByMe;
+    private boolean idBoardWriter;
+
     //대댓글
     @Schema(description = "해당 댓글에 달린 대댓글 목록")
     private List<ReplyCommentResponseDto> replies;
+
 }

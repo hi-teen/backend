@@ -1,6 +1,7 @@
 package backend.hiteen.comment.repository;
 
 import backend.hiteen.comment.entity.Comment;
+import backend.hiteen.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,5 +20,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findRootsByBoardId(@Param("boardId") Long boardId);
 
     Optional<Comment> findByBoardIdAndMemberId(Long boardId, Long memberId);
+
+    List<Comment> findAllByMember(Member member);
 
 }
