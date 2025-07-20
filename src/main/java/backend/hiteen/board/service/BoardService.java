@@ -9,7 +9,6 @@ import backend.hiteen.global.exception.BusinessException;
 import backend.hiteen.member.entity.Member;
 import backend.hiteen.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.converters.models.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,6 +82,19 @@ public class BoardService {
 
         List<Board> boards=boardRepository.searchByKeyword(keyword);
         return boards.stream().map(BoardResponse::new).toList();
+    }
+
+    //게시글 삭제
+    public void deleteBoard(String email, Long boardId){
+        Member member=memberRepository.findByEmail(email).orElseThrow(()-> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+
+        Board board=boardRepository.findById(boardId).orElseThrow(()->new BusinessException(ErrorCode.BOARD_NOT_FOUND));
+
+        if(!board.getMember().equals(member)){
+            throw new BusinessException(ErrorCode.NO_PERMISSION_TO_DELETE_BOARD);
+        }
+
+        boardRepository.delete(board);
     }
 
 }
