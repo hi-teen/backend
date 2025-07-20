@@ -5,6 +5,8 @@ import backend.hiteen.comment.dto.request.CommentRequestDto;
 import backend.hiteen.comment.dto.request.ReplyCommentRequestDto;
 import backend.hiteen.comment.dto.response.CommentLikeResponse;
 import backend.hiteen.comment.dto.response.CommentResponseDto;
+import backend.hiteen.comment.dto.response.MyCommentResponse;
+import backend.hiteen.comment.dto.response.ReplyCommentResponseDto;
 import backend.hiteen.comment.service.CommentService;
 import backend.hiteen.common.response.ApiResponse;
 import backend.hiteen.common.response.SuccessCode;
@@ -43,14 +45,14 @@ public class CommentController {
 
     @PostMapping("/{commentId}/replies")
     @Operation(summary = "대댓글 작성", description = "특정 댓글에 대한 대댓글을 작성합니다.")
-    public ResponseEntity<ApiResponse<CommentResponseDto>> addReplyComment(
+    public ResponseEntity<ApiResponse<ReplyCommentResponseDto>> addReplyComment(
             @AuthenticationPrincipal CustomUserPrincipal principal,
             @PathVariable Long commentId,
             @RequestBody ReplyCommentRequestDto request) {
-        CommentResponseDto response = commentService.addReplyComment
-                (principal.getId(),
-                 commentId,
-                 request.getContent()
+        ReplyCommentResponseDto response = commentService.addReplyComment(
+                principal.getId(),
+                commentId,
+                request.getContent()
                 );
 
         return ResponseEntity
@@ -66,6 +68,17 @@ public class CommentController {
         Long memberId = principal != null ? principal.getId() : null;
         List<CommentResponseDto> comments = commentService.getComments(boardId, memberId);
 
+        return ResponseEntity
+                .status(SuccessCode.COMMENT_FETCHED.getStatus())
+                .body(ApiResponse.success(SuccessCode.COMMENT_FETCHED, comments));
+    }
+
+    @GetMapping("/me")
+    @Operation(summary = "내가 쓴 댓글/대댓글 조회", description = "내가 쓴 댓글/대댓글과 게시글 정보를 조회합니다")
+    public ResponseEntity<ApiResponse<List<MyCommentResponse>>> getMyComments(
+            @AuthenticationPrincipal CustomUserPrincipal principal
+    ) {
+        List<MyCommentResponse> comments = commentService.getMyComments(principal.getId());
         return ResponseEntity
                 .status(SuccessCode.COMMENT_FETCHED.getStatus())
                 .body(ApiResponse.success(SuccessCode.COMMENT_FETCHED, comments));

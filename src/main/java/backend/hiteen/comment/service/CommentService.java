@@ -4,6 +4,7 @@ import backend.hiteen.board.exception.BoardNotFoundException;
 import backend.hiteen.board.repository.BoardRepository;
 import backend.hiteen.comment.dto.response.CommentLikeResponse;
 import backend.hiteen.comment.dto.response.CommentResponseDto;
+import backend.hiteen.comment.dto.response.MyCommentResponse;
 import backend.hiteen.comment.dto.response.ReplyCommentResponseDto;
 import backend.hiteen.comment.entity.Comment;
 import backend.hiteen.comment.entity.CommentLike;
@@ -48,6 +49,8 @@ public class CommentService {
                 .build();
         commentRepository.save(comment);
 
+        boolean isBoardWriter = comment.getMember().getId().equals(board.getMember().getId());
+
         return new CommentResponseDto(
                 comment.getId(),
                 comment.getContent(),
@@ -55,12 +58,13 @@ public class CommentService {
                 comment.getCreatedAt(),
                 0,
                 false,
+                isBoardWriter,
                 List.of()
         );
     }
 
     @Transactional
-    public CommentResponseDto addReplyComment(Long memberId,Long parentCommentId, String content) {
+    public ReplyCommentResponseDto addReplyComment(Long memberId,Long parentCommentId, String content) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
         Comment parentComment = commentRepository.findById(parentCommentId)
@@ -79,14 +83,16 @@ public class CommentService {
 
         commentRepository.save(replycomment);
 
-        return new CommentResponseDto(
+        boolean replyIsBoardWriter = replycomment.getMember().getId().equals(board.getMember().getId());
+
+        return new ReplyCommentResponseDto(
                 replycomment.getId(),
                 replycomment.getContent(),
                 replycomment.getAnonymousNumber(),
                 replycomment.getCreatedAt(),
                 0,
                 false,
-                List.of()
+                replyIsBoardWriter
         );
     }
 
@@ -108,6 +114,25 @@ public class CommentService {
 
         return topLevelComments.stream()
                 .map(c -> covertToDto(c, member))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<MyCommentResponse> getMyComments(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(MemberNotFoundException::new);
+
+        List<Comment> myComments = commentRepository.findAllByMember(member);
+
+        return myComments.stream()
+                .map(comment -> new MyCommentResponse(
+                        comment.getBoard().getId(),
+                        comment.getBoard().getTitle(),
+                        comment.getId(),
+                        comment.getContent(),
+                        comment.getParentComment() != null,
+                        comment.getCreatedAt()
+                ))
                 .toList();
     }
 
@@ -138,15 +163,14 @@ public class CommentService {
 
     private CommentResponseDto covertToDto(Comment comment, Member member) {
         int likeCount = commentLikeRepository.countByComment(comment);
-        boolean likedByMe = false;
-        if (member != null) {
-            likedByMe = commentLikeRepository.findByCommentAndMember(comment, member).isPresent();
-        }
+        boolean likedByMe = member != null && commentLikeRepository.findByCommentAndMember(comment, member).isPresent();
+        boolean isBoardWriter = comment.getMember().getId().equals(comment.getBoard().getMember().getId());
 
         List<ReplyCommentResponseDto> replies = comment.getChildrenComment().stream()
                 .map(child -> {
                     int replyLikeCount = commentLikeRepository.countByComment(child);
                     boolean replyLikedByMe = member != null && commentLikeRepository.findByCommentAndMember(child, member).isPresent();
+                    boolean replyIsBoardWriter = child.getMember().getId().equals(child.getBoard().getMember().getId());
 
                     return new ReplyCommentResponseDto(
                             child.getId(),
@@ -154,7 +178,8 @@ public class CommentService {
                             child.getAnonymousNumber(),
                             child.getCreatedAt(),
                             replyLikeCount,
-                            replyLikedByMe
+                            replyLikedByMe,
+                            replyIsBoardWriter
                     );
                 })
                 .toList();
@@ -166,6 +191,7 @@ public class CommentService {
                 comment.getCreatedAt(),
                 likeCount,
                 likedByMe,
+                isBoardWriter,
                 replies
                 );
     }
