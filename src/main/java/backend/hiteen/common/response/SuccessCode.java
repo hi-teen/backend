@@ -29,6 +29,10 @@ public enum SuccessCode {
     COMMENT_CREATED(HttpStatus.CREATED, "댓글이 등록되었습니다."),
     REPLY_CREATED(HttpStatus.CREATED,"대댓글이 등록되었습니다."),
     COMMENT_FETCHED(HttpStatus.OK, "댓글 목록을 불러왔습니다."),
+    COMMENT_DELETED(HttpStatus.OK, "댓글이 삭제되었습니다."),
+    COMMENT_LIKED_CREATED(HttpStatus.CREATED, "댓글 좋아요 되었습니다."),
+    COMMENT_LIKED_DELETED(HttpStatus.OK, "댓글 좋아요가 취소되었습니다."),
+
 
     //love
     LOVE_CREATED(HttpStatus.CREATED, "게시글에 좋아요를 눌렀습니다."),

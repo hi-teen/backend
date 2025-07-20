@@ -2,10 +2,15 @@ package backend.hiteen.comment.service;
 import backend.hiteen.board.entity.Board;
 import backend.hiteen.board.exception.BoardNotFoundException;
 import backend.hiteen.board.repository.BoardRepository;
+import backend.hiteen.comment.dto.response.CommentLikeResponse;
 import backend.hiteen.comment.dto.response.CommentResponseDto;
+import backend.hiteen.comment.dto.response.MyCommentResponse;
 import backend.hiteen.comment.dto.response.ReplyCommentResponseDto;
 import backend.hiteen.comment.entity.Comment;
+import backend.hiteen.comment.entity.CommentLike;
 import backend.hiteen.comment.exception.CommentNotFoundException;
+import backend.hiteen.comment.exception.CommentNotOwnerException;
+import backend.hiteen.comment.repository.CommentLikeRepository;
 import backend.hiteen.comment.repository.CommentRepository;
 import backend.hiteen.member.entity.Member;
 import backend.hiteen.member.exception.MemberNotFoundException;
@@ -15,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -23,6 +29,7 @@ public class CommentService {
     public final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     // 댓글 등록
     @Transactional
@@ -43,17 +50,22 @@ public class CommentService {
                 .build();
         commentRepository.save(comment);
 
+        boolean isBoardWriter = comment.getMember().getId().equals(board.getMember().getId());
+
         return new CommentResponseDto(
                 comment.getId(),
                 comment.getContent(),
                 comment.getAnonymousNumber(),
                 comment.getCreatedAt(),
+                0,
+                false,
+                isBoardWriter,
                 List.of()
         );
     }
 
     @Transactional
-    public CommentResponseDto addReplyComment(Long memberId,Long parentCommentId, String content) {
+    public ReplyCommentResponseDto addReplyComment(Long memberId,Long parentCommentId, String content) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
         Comment parentComment = commentRepository.findById(parentCommentId)
@@ -72,12 +84,16 @@ public class CommentService {
 
         commentRepository.save(replycomment);
 
-        return new CommentResponseDto(
+        boolean replyIsBoardWriter = replycomment.getMember().getId().equals(board.getMember().getId());
+
+        return new ReplyCommentResponseDto(
                 replycomment.getId(),
                 replycomment.getContent(),
                 replycomment.getAnonymousNumber(),
                 replycomment.getCreatedAt(),
-                List.of()
+                0,
+                false,
+                replyIsBoardWriter
         );
     }
 
@@ -88,26 +104,97 @@ public class CommentService {
 
 
     @Transactional(readOnly = true)
-    public List<CommentResponseDto> getComments(Long boardId) {
+    public List<CommentResponseDto> getComments(Long boardId, Long memberId) {
         if (!boardRepository.existsById(boardId)) {
             throw new BoardNotFoundException();
         }
 
         List<Comment> topLevelComments = commentRepository.findRootsByBoardId(boardId);
+        Member member = memberId == null ? null : memberRepository.findById(memberId)
+                .orElse(null);
 
         return topLevelComments.stream()
-                .map(this::covertToDto)
+                .map(c -> covertToDto(c, member))
                 .toList();
     }
 
-    private CommentResponseDto covertToDto(Comment comment) {
+    @Transactional(readOnly = true)
+    public List<MyCommentResponse> getMyComments(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(MemberNotFoundException::new);
+
+        List<Comment> myComments = commentRepository.findAllByMember(member);
+
+        return myComments.stream()
+                .map(comment -> new MyCommentResponse(
+                        comment.getBoard().getId(),
+                        comment.getBoard().getTitle(),
+                        comment.getId(),
+                        comment.getContent(),
+                        comment.getParentComment() != null,
+                        comment.getCreatedAt()
+                ))
+                .toList();
+    }
+
+    @Transactional
+    public CommentLikeResponse toggleLike(Long commentId, Long memberId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(CommentNotFoundException::new);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(MemberNotFoundException::new);
+
+        Optional<CommentLike> optionalLike = commentLikeRepository.findByCommentAndMember(comment, member);
+
+        boolean liked;
+        if (optionalLike.isPresent()) {
+            commentLikeRepository.deleteByCommentAndMember(comment, member);
+            liked = false;
+        } else {
+            commentLikeRepository.save(CommentLike.builder()
+                                               .comment(comment)
+                                               .member(member)
+                                               .build());
+            liked = true;
+        }
+
+        int likeCount = commentLikeRepository.countByComment(comment);
+        return new CommentLikeResponse(likeCount, liked);
+    }
+
+    @Transactional
+    public void deleteComment(Long memberId, Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(CommentNotFoundException::new);
+
+        if (!comment.getMember().getId().equals(memberId)) {
+            throw new CommentNotOwnerException();
+        }
+
+        commentRepository.delete(comment);
+    }
+
+    private CommentResponseDto covertToDto(Comment comment, Member member) {
+        int likeCount = commentLikeRepository.countByComment(comment);
+        boolean likedByMe = member != null && commentLikeRepository.findByCommentAndMember(comment, member).isPresent();
+        boolean isBoardWriter = comment.getMember().getId().equals(comment.getBoard().getMember().getId());
+
         List<ReplyCommentResponseDto> replies = comment.getChildrenComment().stream()
-                .map(child -> new ReplyCommentResponseDto(
-                        child.getId(),
-                        child.getContent(),
-                        child.getAnonymousNumber(),
-                        child.getCreatedAt()
-                        ))
+                .map(child -> {
+                    int replyLikeCount = commentLikeRepository.countByComment(child);
+                    boolean replyLikedByMe = member != null && commentLikeRepository.findByCommentAndMember(child, member).isPresent();
+                    boolean replyIsBoardWriter = child.getMember().getId().equals(child.getBoard().getMember().getId());
+
+                    return new ReplyCommentResponseDto(
+                            child.getId(),
+                            child.getContent(),
+                            child.getAnonymousNumber(),
+                            child.getCreatedAt(),
+                            replyLikeCount,
+                            replyLikedByMe,
+                            replyIsBoardWriter
+                    );
+                })
                 .toList();
 
         return new CommentResponseDto(
@@ -115,10 +202,12 @@ public class CommentService {
                 comment.getContent(),
                 comment.getAnonymousNumber(),
                 comment.getCreatedAt(),
-                replies);
+                likeCount,
+                likedByMe,
+                isBoardWriter,
+                replies
+                );
     }
-
-
     }
 
 
