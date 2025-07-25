@@ -8,10 +8,11 @@ import backend.hiteen.comment.entity.Comment;
 import backend.hiteen.comment.repository.CommentRepository;
 import backend.hiteen.common.response.ApiResponse;
 import backend.hiteen.common.response.SuccessCode;
+import backend.hiteen.message.dto.request.MessageRequest;
 import backend.hiteen.message.dto.response.MessageResponse;
 import backend.hiteen.message.entity.Message;
 import backend.hiteen.message.entity.MessageRoom;
-import backend.hiteen.message.exception.MessageRoomNotFoundException;
+import backend.hiteen.message.exception.*;
 import backend.hiteen.message.repository.MessageRepository;
 import backend.hiteen.message.repository.MessageRoomRepository;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.async.DeferredResult;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,43 +33,74 @@ public class MessageService {
     private final MessageRoomRepository messageRoomRepository;
 
 
-    public MessageResponse toDto(Message message) {
+    public MessageResponse toDto(Message message, Long memberId) {
         return new MessageResponse(
                 message.getId(),
                 message.getMessageRoom().getId(),
-                message.getSenderId(),
                 message.getContent(),
                 message.getCreatedAt(),
-                computeDisplayName(message)
+                computeDisplayName(message),
+                message.getSenderId().equals(memberId)
         );
     }
 
     // 대화 방 생성 및 메시지 전송
     @Transactional
-    public Message sendMessage(Long boardId, Long senderId, Long receiverId, String content) {
-
-        Board board = boardRepository.findById(boardId)
+    public Message sendMessage(MessageRequest request, Long memberId) {
+        Board board = boardRepository.findById(request.getBoardId())
                 .orElseThrow(BoardNotFoundException::new);
 
-        Optional<MessageRoom> optionalRoom = messageRoomRepository.findMessageRoomByBoardIdAndSenderIdAndReceiverId(boardId, senderId, receiverId);
-        MessageRoom messageRoom = optionalRoom.orElse(null);
+        Long receiverId;
 
+        //둘 다 동시에 값 들어오지 않게
+        if (Boolean.TRUE.equals(request.getIsBoardWriter()) && request.getAnonymousNumber() != null) {
+            throw new InvalidMessageTargetException();
+        }
+
+        //작성자에게 쪽지보냄
+        if (Boolean.TRUE.equals(request.getIsBoardWriter())) {
+            receiverId = board.getMember().getId();
+
+            if (receiverId.equals(memberId)) {
+                throw new CannotSendMessageToSelfException();
+            }
+            //익명 댓글러에게 쪽지보냄
+        } else if (request.getAnonymousNumber() != null) {
+            Comment comment = commentRepository.findByBoardIdAndAnonymousNumber(
+                    request.getBoardId(), request.getAnonymousNumber()
+            ).orElseThrow(CommentAnonymousNotFoundException::new);
+
+            receiverId = comment.getMember().getId();
+
+            if (receiverId.equals(memberId)) {
+                throw new CannotSendMessageToSelfException();
+            }
+
+        } else {
+            throw new MessageTargetNotSpecifiedException();
+        }
+
+        Optional<MessageRoom> optionalRoom =
+                messageRoomRepository.findByBoardIdAndParticipants(
+                        request.getBoardId(), memberId, receiverId
+                );
+
+        MessageRoom messageRoom = optionalRoom.orElse(null);
 
         if (messageRoom == null) {
             messageRoom = MessageRoom.builder()
                     .board(board)
-                    .senderId(senderId)
+                    .senderId(memberId)
                     .receiverId(receiverId)
-                    .createdAt(LocalDateTime.now())
                     .build();
+
             messageRoom = messageRoomRepository.save(messageRoom);
         }
 
         Message message = Message.builder()
                 .messageRoom(messageRoom)
-                .senderId(senderId)
-                .content(content)
-                .createdAt(LocalDateTime.now())
+                .senderId(memberId)
+                .content(request.getContent())
                 .build();
 
         return messageRepository.save(message);
@@ -78,14 +109,17 @@ public class MessageService {
     // 대화 방 내 메세지 전송
 
     @Transactional
-    public Message sendMessageInRoom(Long roomId, Long senderId, String content) {
+    public Message sendMessageInRoom(Long roomId, Long memberId, String content) {
         MessageRoom room = messageRoomRepository.findById(roomId)
                 .orElseThrow(MessageRoomNotFoundException::new);
+
+        if (!memberId.equals(room.getSenderId()) && !memberId.equals(room.getReceiverId())) {
+            throw new IllegalArgumentException("이 쪽지방에 메시지를 보낼 권한이 없습니다.");
+        }
         Message message = Message.builder()
                 .messageRoom(room)
-                .senderId(senderId)
+                .senderId(memberId)
                 .content(content)
-                .createdAt(LocalDateTime.now())
                 .build();
 
         return messageRepository.save(message);
@@ -105,14 +139,14 @@ public class MessageService {
     }
 
     //롱폴링
-    public DeferredResult<ResponseEntity<ApiResponse<List<MessageResponse>>>> pollMessages(Long roomId, Long lastMessageId) {
+    public DeferredResult<ResponseEntity<ApiResponse<List<MessageResponse>>>> pollMessages(Long roomId, Long lastMessageId, Long memberId) {
         long timeout = 30_000L;
         DeferredResult<ResponseEntity<ApiResponse<List<MessageResponse>>>> result =
                 new DeferredResult<>(timeout);
 
         new Thread(() -> {
             List<MessageResponse> body = getMessageAfter(roomId, lastMessageId).stream()
-                    .map(this::toDto)
+                    .map(m -> toDto(m, memberId))
                     .toList();
             ResponseEntity<ApiResponse<List<MessageResponse>>> response =
                     ResponseEntity
