@@ -1,20 +1,19 @@
 package backend.hiteen.message.entity;
 
 
+import backend.hiteen.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Message {
+public class Message extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,5 +25,4 @@ public class Message {
 
     private Long senderId;
     private String content;
-    private LocalDateTime createdAt;
 }
