@@ -20,6 +20,7 @@ public enum ErrorCode {
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."),
     BOARD_CREATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "게시글 작성에 실패했습니다."),
     KEYWORD_REQUIRED(HttpStatus.BAD_REQUEST, "검색어를 입력해주세요."),
+    NO_PERMISSION_TO_DELETE_BOARD(HttpStatus.FORBIDDEN, "게시글 삭제 권한이 없습니다."),
 
     //comment
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글이 존재하지 않습니다."),
@@ -36,6 +37,10 @@ public enum ErrorCode {
     //message
     MESSAGE_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "쪽지방을 찾을 수 없습니다."),
     MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "쪽지를 찾을 수 없습니다."),
+    CANNOT_SEND_MESSAGE_TO_SELF(HttpStatus.BAD_REQUEST, "자기 자신에게 쪽지를 보낼 수 없습니다."),
+    MESSAGE_TARGET_NOT_SPECIFIED(HttpStatus.BAD_REQUEST, "쪽지 받을 대상을 지정해 주세요."),
+    COMMENT_ANONYMOUS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 익명번호의 댓글이 존재하지 않습니다."),
+    INVALID_MESSAGE_TARGET(HttpStatus.BAD_REQUEST, "쪽지 대상은 게시글 작성자 또는 특정 댓글러 중 하나만 지정할 수 있습니다."),
 
     //Meal
     MEAL_NOT_FOUND(HttpStatus.NOT_FOUND, "급식 정보를 찾을 수 없습니다."),

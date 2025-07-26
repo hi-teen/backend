@@ -23,4 +23,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     List<Comment> findAllByMember(Member member);
 
+    Optional<Comment> findByBoardIdAndAnonymousNumber(Long boardId, Integer anonymousNumber);
+
+
 }

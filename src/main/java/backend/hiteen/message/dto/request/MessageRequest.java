@@ -11,13 +11,11 @@ public class MessageRequest {
     @Schema(description = "게시글 ID", example = "1")
     private Long boardId;
 
-    @NotNull
-    @Schema(description = "발신자 ID", example = "2")
-    private Long senderId;
+    @Schema(description = "받는 사람이 게시글 작성자인 경우 true", example = "true")
+    private Boolean isBoardWriter;
 
-    @NotNull
-    @Schema(description = "수신자 ID", example = "3")
-    private Long receiverId;
+    @Schema(description = "익명 번호(댓글러에게 쪽지 보낼 때)", example = "3")
+    private Integer anonymousNumber;
 
     @NotNull
     @Schema(description = "쪽지 내용", example = "안녕하세요!")

@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -68,6 +67,12 @@ public class BoardController {
     public ResponseEntity<ApiResponse<List<BoardResponse>>> searchBoards(@RequestParam("keyword") String keyword){
         List<BoardResponse> responses=boardService.searchBoards(keyword);
         return ResponseEntity.status(SuccessCode.SEARCHED_BOARD_LIST_FETCHED.getStatus()).body(ApiResponse.success(SuccessCode.SEARCHED_BOARD_LIST_FETCHED, responses));
+    }
+
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<ApiResponse<Void>> deleteBoard(@AuthenticationPrincipal CustomUserPrincipal principal, @PathVariable Long boardId){
+        boardService.deleteBoard(principal.getUsername(),boardId);
+        return ResponseEntity.ok(ApiResponse.success(SuccessCode.BOARD_DELETED));
     }
 
 }

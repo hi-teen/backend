@@ -13,20 +13,19 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class MessageResponse {
 
-    @Schema(description = "메시지 ID", example = "10")
+    @Schema(description = "메시지 ID")
     private Long messageId;
 
-    @Schema(description = "쪽지방 ID", example = "5")
+    @Schema(description = "쪽지방 ID")
     private Long roomId;
 
-    @Schema(description = "발신자 ID", example = "2")
-    private Long senderId;
-
-    @Schema(description = "쪽지 내용", example = "반갑습니다!")
+    @Schema(description = "쪽지 내용")
     private String content;
 
     private LocalDateTime createdAt;
 
-    @Schema(description = "작성자", example = "작성자")
+    @Schema(description = "작성자/익명N/익명")
     private String chatNickname;
+
+    private Boolean isMine;
 }
