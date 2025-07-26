@@ -3,13 +3,11 @@ package backend.hiteen.message.entity;
 
 import backend.hiteen.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,5 +22,9 @@ public class Message extends BaseTimeEntity {
     private MessageRoom messageRoom;
 
     private Long senderId;
+    private Long receiverId;
     private String content;
+
+    @Column(name = "is_read")
+    private boolean isRead = false;
 }

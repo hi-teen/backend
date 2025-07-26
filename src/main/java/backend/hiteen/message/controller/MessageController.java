@@ -6,6 +6,7 @@ import backend.hiteen.common.response.SuccessCode;
 import backend.hiteen.message.dto.request.MessageRequest;
 import backend.hiteen.message.dto.request.MessageRoomRequest;
 import backend.hiteen.message.dto.response.MessageResponse;
+import backend.hiteen.message.dto.response.MessageRoomListResponse;
 import backend.hiteen.message.entity.Message;
 import backend.hiteen.message.service.MessageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,12 +63,24 @@ public class MessageController {
             @AuthenticationPrincipal CustomUserPrincipal principal,
             @PathVariable Long roomId) {
         Long memberId = principal.getId();
-        List<MessageResponse> responseList = messageService.getMessages(roomId).stream()
-                .map(m -> messageService.toDto(m, memberId))
-                .toList();
+        List<MessageResponse> responseList = messageService.getMessages(roomId, memberId);
         return ResponseEntity
-                .ok(ApiResponse.success(SuccessCode.MESSAGES_FETCHED, responseList));
+                .status(SuccessCode.MESSAGES_FETCHED.getStatus())
+                .body(ApiResponse.success(SuccessCode.MESSAGES_FETCHED, responseList));
     }
+
+        @GetMapping("/rooms")
+    @Operation(summary = "참여한 쪽지방 목록 조회", description = "사용자가 참여한 모든 쪽지방 목록을 최신 메세지 기준으로 조회합니다.")
+    public ResponseEntity<ApiResponse<List<MessageRoomListResponse>>> getMyMessageRooms(
+            @AuthenticationPrincipal CustomUserPrincipal principal
+    ) {
+        Long memberId = principal.getId();
+        List<MessageRoomListResponse> rooms = messageService.getMyMessageRooms(memberId);
+        return ResponseEntity
+                .status(SuccessCode.MESSAGE_ROOMS_FETCHED.getStatus())
+                .body(ApiResponse.success(SuccessCode.MESSAGE_ROOMS_FETCHED, rooms));
+    }
+
 
     @GetMapping("/room/{roomId}/poll")
     @Operation(summary = "롱폴링 메시지 수신", description = "새 메시지가 올 때까지 대기하여 전달합니다.")

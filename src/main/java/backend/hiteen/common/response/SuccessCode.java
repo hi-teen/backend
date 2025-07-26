@@ -49,7 +49,8 @@ public enum SuccessCode {
     MESSAGE_SENT(HttpStatus.CREATED, "쪽지를 보냈습니다."),
     MESSAGE_SENT_IN_ROOM(HttpStatus.CREATED, "쪽지방에 메시지를 보냈습니다."),
     MESSAGES_FETCHED(HttpStatus.OK, "쪽지 목록을 조회했습니다."),
-    MESSAGE_POLLED(HttpStatus.OK, "롱폴링으로 새 메시지를 조회했습니다()"),
+    MESSAGE_POLLED(HttpStatus.OK, "롱폴링으로 새 메시지를 조회했습니다."),
+    MESSAGE_ROOMS_FETCHED(HttpStatus.OK, "쪽지방 목록 조회했습니다."),
 
     //Meal
     MEAL_FETCHED(HttpStatus.OK, "급식 조회했습니다."),

@@ -10,6 +10,7 @@ import backend.hiteen.common.response.ApiResponse;
 import backend.hiteen.common.response.SuccessCode;
 import backend.hiteen.message.dto.request.MessageRequest;
 import backend.hiteen.message.dto.response.MessageResponse;
+import backend.hiteen.message.dto.response.MessageRoomListResponse;
 import backend.hiteen.message.entity.Message;
 import backend.hiteen.message.entity.MessageRoom;
 import backend.hiteen.message.exception.*;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -127,8 +130,14 @@ public class MessageService {
 
 
     //특정 방 대화 전체 조회
-    public List<Message> getMessages(Long roomId) {
-        return messageRepository.findByMessageRoomIdOrderByCreatedAtAsc(roomId);
+    @Transactional
+    public List<MessageResponse> getMessages(Long roomId, Long memberId) {
+        readAllUnreadMessages(roomId, memberId);
+
+        List<Message> messages = messageRepository.findByMessageRoomIdOrderByCreatedAtAsc(roomId);
+        return messages.stream()
+                .map(m -> toDto(m, memberId))
+                .toList();
     }
 
     public List<Message> getMessageAfter(Long roomId, Long lastMessageId) {
@@ -136,6 +145,39 @@ public class MessageService {
                 .stream()
                 .filter(m -> m.getId() > lastMessageId)
                 .toList();
+    }
+
+    public List<MessageRoomListResponse> getMyMessageRooms(Long memberId) {
+        List<MessageRoom> rooms = messageRoomRepository.findAllByMember(memberId);
+
+        List<MessageRoomListResponse> result = new ArrayList<>();
+
+        for (MessageRoom room : rooms) {
+            Message lastMsg = messageRepository
+                    .findTopByMessageRoomIdOrderByCreatedAtDesc(room.getId())
+                    .orElse(null);
+
+            String lastMessage = lastMsg != null ? lastMsg.getContent() : null;
+            LocalDateTime lastMessageTime = lastMsg != null ? lastMsg.getCreatedAt() : null;
+            String lastMessageNickname = lastMsg != null ? computeDisplayName(lastMsg) : null;
+
+            Long targetId = room.getSenderId().equals(memberId) ? room.getReceiverId() : room.getSenderId();
+            String targetNickname = computeDisplayName(room, targetId);
+
+            int unreadCount = messageRepository.countByMessageRoomIdAndReceiverIdAndIsReadFalse(room.getId(), memberId);
+
+            result.add(new MessageRoomListResponse(
+                    room.getId(),
+                    room.getBoard().getId(),
+                    room.getBoard().getTitle(),
+                    lastMessage,
+                    lastMessageTime,
+                    lastMessageNickname,
+                    unreadCount,
+                    targetNickname
+            ));
+        }
+        return result;
     }
 
     //롱폴링
@@ -170,9 +212,30 @@ public class MessageService {
             return "작성자";
         } else {
             // 댓글을 통해 부여된 익명 번호 조회
-            Optional<Comment> commentOptional = commentRepository.findByBoardIdAndMemberId(board.getId(), message.getSenderId());
+            Optional<Comment> commentOptional = commentRepository.findByBoardIdAndMemberId(board.getId(),
+                                                                                           message.getSenderId());
             return commentOptional.map(comment -> "익명 " + comment.getAnonymousNumber())
                     .orElse("익명");
+        }
+    }
+
+    public String computeDisplayName(MessageRoom room, Long memberId) {
+        Board board = room.getBoard();
+        Long boardOwnerId = board.getMember().getId();
+
+        if (memberId.equals(boardOwnerId)) {
+            return "작성자";
+        } else {
+            Optional<Comment> commentOptional = commentRepository.findByBoardIdAndMemberId(board.getId(), memberId);
+            return commentOptional.map(comment -> "익명 " + comment.getAnonymousNumber())
+                    .orElse("익명");
+        }
+    }
+
+    public void readAllUnreadMessages(Long roomId, Long memberId) {
+        List<Message> unreadMessages = messageRepository.findByMessageRoomIdAndReceiverIdAndIsReadFalse(roomId, memberId);
+        for (Message message : unreadMessages) {
+            message.setRead(true);
         }
     }
 
