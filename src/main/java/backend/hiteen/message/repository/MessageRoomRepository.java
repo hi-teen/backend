@@ -22,11 +22,9 @@ public interface MessageRoomRepository extends JpaRepository<MessageRoom, Long> 
             @Param("id1") Long id1,
             @Param("id2") Long id2);
 
-    @Query("""
-                    select mr
-                    from MessageRoom mr
-                    where mr.senderId = :memberId or mr.receiverId = :memberId
-                    order by (select max(m.createdAt) from Message m where m.messageRoom = mr) desc
-            """)
-    List<MessageRoom> findAllByMember(@Param("memberId") Long memberId);
+    @Query("SELECT mr " +
+            "FROM MessageRoom mr " +
+            "WHERE mr.senderId = :memberId OR mr.receiverId = :memberId " +
+            "ORDER BY mr.updatedAt DESC")
+    List<MessageRoom> findAllByMemberOrderByUpdatedAtDesc(@Param("memberId") Long memberId);
 }
