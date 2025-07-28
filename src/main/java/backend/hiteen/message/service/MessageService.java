@@ -14,6 +14,7 @@ import backend.hiteen.message.dto.response.MessageRoomListResponse;
 import backend.hiteen.message.entity.Message;
 import backend.hiteen.message.entity.MessageRoom;
 import backend.hiteen.message.exception.*;
+import backend.hiteen.message.mapper.MessageMapper;
 import backend.hiteen.message.repository.MessageRepository;
 import backend.hiteen.message.repository.MessageRoomRepository;
 import lombok.AllArgsConstructor;
@@ -34,17 +35,11 @@ public class MessageService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
     private final MessageRoomRepository messageRoomRepository;
+    private final MessageAsyncService messageAsyncService;
 
 
     public MessageResponse toDto(Message message, Long memberId) {
-        return new MessageResponse(
-                message.getId(),
-                message.getMessageRoom().getId(),
-                message.getContent(),
-                message.getCreatedAt(),
-                computeDisplayName(message),
-                message.getSenderId().equals(memberId)
-        );
+        return MessageMapper.toDto(message, memberId, commentRepository);
     }
 
     // 대화 방 생성 및 메시지 전송
@@ -103,6 +98,7 @@ public class MessageService {
         Message message = Message.builder()
                 .messageRoom(messageRoom)
                 .senderId(memberId)
+                .receiverId(receiverId)
                 .content(request.getContent())
                 .build();
 
@@ -117,11 +113,17 @@ public class MessageService {
                 .orElseThrow(MessageRoomNotFoundException::new);
 
         if (!memberId.equals(room.getSenderId()) && !memberId.equals(room.getReceiverId())) {
-            throw new IllegalArgumentException("이 쪽지방에 메시지를 보낼 권한이 없습니다.");
+            throw new MessageRoomNotOwnerException();
         }
+
+        Long otherId = room.getSenderId().equals(memberId)
+                ? room.getReceiverId()
+                : room.getSenderId();
+
         Message message = Message.builder()
                 .messageRoom(room)
                 .senderId(memberId)
+                .receiverId(otherId)
                 .content(content)
                 .build();
 
@@ -140,18 +142,10 @@ public class MessageService {
                 .toList();
     }
 
-    public List<Message> getMessageAfter(Long roomId, Long lastMessageId) {
-        return messageRepository.findByMessageRoomIdOrderByCreatedAtAsc(roomId)
-                .stream()
-                .filter(m -> m.getId() > lastMessageId)
-                .toList();
-    }
-
     public List<MessageRoomListResponse> getMyMessageRooms(Long memberId) {
-        List<MessageRoom> rooms = messageRoomRepository.findAllByMember(memberId);
+        List<MessageRoom> rooms = messageRoomRepository.findAllByMemberOrderByUpdatedAtDesc(memberId);
 
         List<MessageRoomListResponse> result = new ArrayList<>();
-
         for (MessageRoom room : rooms) {
             Message lastMsg = messageRepository
                     .findTopByMessageRoomIdOrderByCreatedAtDesc(room.getId())
@@ -159,10 +153,10 @@ public class MessageService {
 
             String lastMessage = lastMsg != null ? lastMsg.getContent() : null;
             LocalDateTime lastMessageTime = lastMsg != null ? lastMsg.getCreatedAt() : null;
-            String lastMessageNickname = lastMsg != null ? computeDisplayName(lastMsg) : null;
+            String lastMessageNickname = lastMsg != null ? MessageMapper.computeDisplayName(lastMsg, commentRepository) : null;
 
             Long targetId = room.getSenderId().equals(memberId) ? room.getReceiverId() : room.getSenderId();
-            String targetNickname = computeDisplayName(room, targetId);
+            String targetNickname = MessageMapper.computeDisplayName(room, targetId, commentRepository);
 
             int unreadCount = messageRepository.countByMessageRoomIdAndReceiverIdAndIsReadFalse(room.getId(), memberId);
 
@@ -186,57 +180,16 @@ public class MessageService {
         DeferredResult<ResponseEntity<ApiResponse<List<MessageResponse>>>> result =
                 new DeferredResult<>(timeout);
 
-        new Thread(() -> {
-            List<MessageResponse> body = getMessageAfter(roomId, lastMessageId).stream()
-                    .map(m -> toDto(m, memberId))
-                    .toList();
-            ResponseEntity<ApiResponse<List<MessageResponse>>> response =
-                    ResponseEntity
-                            .status(SuccessCode.MESSAGE_POLLED.getStatus())
-                            .body(ApiResponse.success(SuccessCode.MESSAGE_POLLED, body));
+        messageAsyncService.pollMessagesAsync(result, roomId, lastMessageId, memberId);
 
-            result.setResult(response);
-        }).start();
+        result.onTimeout(() -> result.setResult(
+                ResponseEntity.ok(ApiResponse.success(SuccessCode.MESSAGE_POLLED, List.of()))
+        ));
 
         return result;
     }
 
-
-    // 작성자라면 작성자 댓글이면 익명번호 기반으로 조회
-    public String computeDisplayName(Message message) {
-        Board board = message.getMessageRoom().getBoard();
-        Long boardOwnerId = board.getMember().getId();
-
-        // 메시지 보낸 사람이 게시글 작성자라면
-        if (message.getSenderId().equals(boardOwnerId)) {
-            return "작성자";
-        } else {
-            // 댓글을 통해 부여된 익명 번호 조회
-            Optional<Comment> commentOptional = commentRepository.findByBoardIdAndMemberId(board.getId(),
-                                                                                           message.getSenderId());
-            return commentOptional.map(comment -> "익명 " + comment.getAnonymousNumber())
-                    .orElse("익명");
-        }
-    }
-
-    public String computeDisplayName(MessageRoom room, Long memberId) {
-        Board board = room.getBoard();
-        Long boardOwnerId = board.getMember().getId();
-
-        if (memberId.equals(boardOwnerId)) {
-            return "작성자";
-        } else {
-            Optional<Comment> commentOptional = commentRepository.findByBoardIdAndMemberId(board.getId(), memberId);
-            return commentOptional.map(comment -> "익명 " + comment.getAnonymousNumber())
-                    .orElse("익명");
-        }
-    }
-
     public void readAllUnreadMessages(Long roomId, Long memberId) {
-        List<Message> unreadMessages = messageRepository.findByMessageRoomIdAndReceiverIdAndIsReadFalse(roomId, memberId);
-        for (Message message : unreadMessages) {
-            message.setRead(true);
-        }
+        messageRepository.markAllAsRead(roomId, memberId);
     }
-
 }
