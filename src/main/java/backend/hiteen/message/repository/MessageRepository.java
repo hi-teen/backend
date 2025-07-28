@@ -2,6 +2,9 @@ package backend.hiteen.message.repository;
 
 import backend.hiteen.message.entity.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,7 +18,15 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     Optional<Message> findTopByMessageRoomIdOrderByCreatedAtDesc(Long messageRoomId);
 
     int countByMessageRoomIdAndReceiverIdAndIsReadFalse(Long roomId, Long memberId);
-    List<Message> findByMessageRoomIdAndReceiverIdAndIsReadFalse(Long roomId, Long receiverId);
+
+    @Modifying
+    @Query("UPDATE Message m " +
+            "SET m.isRead = true " +
+            "WHERE m.messageRoom.id = :roomId " +
+            "  AND m.receiverId = :memberId " +
+            "  AND m.isRead = false")
+    int markAllAsRead(@Param("roomId") Long roomId,
+                      @Param("memberId") Long memberId);
 
 }
 
