@@ -66,7 +66,6 @@ public class Member {
 
     public void updateProfile(
             String name,
-            String nickname,
             String email,
             String password,
             String passwordConfirm,

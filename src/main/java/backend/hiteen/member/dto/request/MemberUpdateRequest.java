@@ -13,9 +13,6 @@ public class MemberUpdateRequest {
     @NotBlank(message = "이름을 입력해주세요.")
     private String name;
 
-    @NotBlank(message = "닉네임을 입력해주세요.")
-    private String nickname;
-
     @NotBlank(message = "이메일을 입력해주세요.")
     @Email(message = "이메일 형식이 올바르지 않습니다.")
     private String email;

@@ -79,7 +79,6 @@ public class MemberService {
 
         member.updateProfile(
                 request.getName(),
-                request.getNickname(),
                 request.getEmail(),
                 request.getPassword(),
                 request.getPasswordConfirm(),
