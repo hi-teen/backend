@@ -69,7 +69,7 @@ public class MessageController {
                 .body(ApiResponse.success(SuccessCode.MESSAGES_FETCHED, responseList));
     }
 
-        @GetMapping("/rooms")
+    @GetMapping("/rooms")
     @Operation(summary = "참여한 쪽지방 목록 조회", description = "사용자가 참여한 모든 쪽지방 목록을 최신 메세지 기준으로 조회합니다.")
     public ResponseEntity<ApiResponse<List<MessageRoomListResponse>>> getMyMessageRooms(
             @AuthenticationPrincipal CustomUserPrincipal principal

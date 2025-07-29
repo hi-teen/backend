@@ -1,6 +1,5 @@
 package backend.hiteen.message.service;
 
-import backend.hiteen.comment.repository.CommentRepository;
 import backend.hiteen.common.response.ApiResponse;
 import backend.hiteen.common.response.ErrorCode;
 import backend.hiteen.common.response.SuccessCode;
@@ -25,7 +24,6 @@ public class MessageAsyncService {
 
     private final MessageRepository messageRepository;
     private final MessageRoomRepository messageRoomRepository;
-    private final CommentRepository commentRepository;
 
 
     @Async
@@ -50,7 +48,7 @@ public class MessageAsyncService {
                     .toList();
 
             List<MessageResponse> body = newMessages.stream()
-                    .map(m -> MessageMapper.toDto(m, memberId, commentRepository))
+                    .map(m -> MessageMapper.toDto(m, memberId))
                     .toList();
 
             ResponseEntity<ApiResponse<List<MessageResponse>>> response =

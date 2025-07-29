@@ -26,7 +26,6 @@ import org.springframework.web.context.request.async.DeferredResult;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -39,7 +38,7 @@ public class MessageService {
 
 
     public MessageResponse toDto(Message message, Long memberId) {
-        return MessageMapper.toDto(message, memberId, commentRepository);
+        return MessageMapper.toDto(message, memberId);
     }
 
     // 대화 방 생성 및 메시지 전송
@@ -49,61 +48,49 @@ public class MessageService {
                 .orElseThrow(BoardNotFoundException::new);
 
         Long receiverId;
+        final Integer anonNum;
 
-        //둘 다 동시에 값 들어오지 않게
-        if (Boolean.TRUE.equals(request.getIsBoardWriter()) && request.getAnonymousNumber() != null) {
-            throw new InvalidMessageTargetException();
-        }
-
-        //작성자에게 쪽지보냄
+        // 작성자에게 보내는 경우
         if (Boolean.TRUE.equals(request.getIsBoardWriter())) {
             receiverId = board.getMember().getId();
-
-            if (receiverId.equals(memberId)) {
-                throw new CannotSendMessageToSelfException();
-            }
-            //익명 댓글러에게 쪽지보냄
-        } else if (request.getAnonymousNumber() != null) {
-            Comment comment = commentRepository.findByBoardIdAndAnonymousNumber(
-                    request.getBoardId(), request.getAnonymousNumber()
-            ).orElseThrow(CommentAnonymousNotFoundException::new);
-
+            anonNum = null;
+            if (receiverId.equals(memberId)) throw new CannotSendMessageToSelfException();
+        }
+        // 익명 댓글러에게 보내는 경우
+        else if (request.getAnonymousNumber() != null) {
+            Comment comment = commentRepository
+                    .findByBoardIdAndAnonymousNumber(board.getId(), request.getAnonymousNumber())
+                    .orElseThrow(CommentAnonymousNotFoundException::new);
             receiverId = comment.getMember().getId();
-
-            if (receiverId.equals(memberId)) {
-                throw new CannotSendMessageToSelfException();
-            }
-
-        } else {
+            anonNum = comment.getAnonymousNumber();
+            if (receiverId.equals(memberId)) throw new CannotSendMessageToSelfException();
+        }
+        else {
             throw new MessageTargetNotSpecifiedException();
         }
 
-        Optional<MessageRoom> optionalRoom =
-                messageRoomRepository.findByBoardIdAndParticipants(
-                        request.getBoardId(), memberId, receiverId
-                );
-
-        MessageRoom messageRoom = optionalRoom.orElse(null);
-
-        if (messageRoom == null) {
-            messageRoom = MessageRoom.builder()
-                    .board(board)
-                    .senderId(memberId)
-                    .receiverId(receiverId)
-                    .build();
-
-            messageRoom = messageRoomRepository.save(messageRoom);
-        }
+        MessageRoom room = messageRoomRepository
+                .findByBoardAndParticipantsAndAnon(
+                        board.getId(), memberId, receiverId, anonNum
+                )
+                .orElseGet(() -> messageRoomRepository.save(
+                        MessageRoom.builder()
+                                .board(board)
+                                .senderId(memberId)
+                                .receiverId(receiverId)
+                                .anonymousNumber(anonNum)
+                                .build()
+                ));
 
         Message message = Message.builder()
-                .messageRoom(messageRoom)
+                .messageRoom(room)
                 .senderId(memberId)
                 .receiverId(receiverId)
                 .content(request.getContent())
                 .build();
-
         return messageRepository.save(message);
     }
+
 
     // 대화 방 내 메세지 전송
 
@@ -153,10 +140,10 @@ public class MessageService {
 
             String lastMessage = lastMsg != null ? lastMsg.getContent() : null;
             LocalDateTime lastMessageTime = lastMsg != null ? lastMsg.getCreatedAt() : null;
-            String lastMessageNickname = lastMsg != null ? MessageMapper.computeDisplayName(lastMsg, commentRepository) : null;
+            String lastMessageNickname = lastMsg != null ? MessageMapper.computeDisplayName(lastMsg) : null;
 
             Long targetId = room.getSenderId().equals(memberId) ? room.getReceiverId() : room.getSenderId();
-            String targetNickname = MessageMapper.computeDisplayName(room, targetId, commentRepository);
+            String targetNickname = MessageMapper.computeDisplayName(room, targetId);
 
             int unreadCount = messageRepository.countByMessageRoomIdAndReceiverIdAndIsReadFalse(room.getId(), memberId);
 
