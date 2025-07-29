@@ -12,15 +12,21 @@ import java.util.Optional;
 public interface MessageRoomRepository extends JpaRepository<MessageRoom, Long> {
 
     @Query("""
-            select mr from MessageRoom mr
-            where mr.board.id = :boardId
-            and ((mr.senderId = :id1 and mr.receiverId = :id2)
-            or (mr.senderId = :id2 and mr.receiverId = :id1))
+                select mr
+                from MessageRoom mr
+                where mr.board.id = :boardId
+                and ((mr.senderId = :id1 and mr.receiverId = :id2)
+                or (mr.senderId = :id2 and mr.receiverId = :id1))
+                and ((:anonNum is null and mr.anonymousNumber is null)
+                or ( :anonNum is not null and mr.anonymousNumber = :anonNum))
             """)
-    Optional<MessageRoom> findByBoardIdAndParticipants(
+    Optional<MessageRoom> findByBoardAndParticipantsAndAnon(
             @Param("boardId") Long boardId,
             @Param("id1") Long id1,
-            @Param("id2") Long id2);
+            @Param("id2") Long id2,
+            @Param("anonNum") Integer anonymousNumber
+    );
+
 
     @Query("SELECT mr " +
             "FROM MessageRoom mr " +

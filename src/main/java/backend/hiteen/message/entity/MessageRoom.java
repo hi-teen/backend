@@ -9,8 +9,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @NoArgsConstructor
@@ -28,5 +26,7 @@ public class MessageRoom extends BaseTimeEntity {
     private Long senderId;
 
     private Long receiverId;
+
+    private Integer anonymousNumber;
 
 }
