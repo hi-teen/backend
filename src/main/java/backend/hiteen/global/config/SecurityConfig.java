@@ -33,9 +33,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
-                        .requestMatchers("api/v1/auth/login",
-                                         "api/v1/auth/reissue",
-                                         "api/v1/members/sign-up",
+                        .requestMatchers("/api/v1/auth/login",
+                                         "/api/v1/auth/reissue",
+                                         "/api/v1/members/sign-up",
                                          "/swagger-ui/**",
                                          "/v3/api-docs/**",
                                          "/actuator/**",
