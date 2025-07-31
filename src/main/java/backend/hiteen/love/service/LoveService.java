@@ -1,14 +1,17 @@
 package backend.hiteen.love.service;
 
 import backend.hiteen.board.entity.Board;
+import backend.hiteen.board.exception.BoardNotFoundException;
 import backend.hiteen.board.repository.BoardRepository;
 import backend.hiteen.common.response.ErrorCode;
 import backend.hiteen.global.exception.BusinessException;
 import backend.hiteen.love.dto.LoveBoardResponse;
 import backend.hiteen.love.entity.Love;
 import backend.hiteen.love.entity.LoveActionResult;
+import backend.hiteen.love.exception.LoveNotOwnerException;
 import backend.hiteen.love.repository.LoveRepository;
 import backend.hiteen.member.entity.Member;
+import backend.hiteen.member.exception.MemberNotFoundException;
 import backend.hiteen.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,9 +32,11 @@ public class LoveService {
     public LoveActionResult updateLoveBoard(String email, Long boardId){
 
         Board board=boardRepository.findById(boardId)
-                .orElseThrow(()->new BusinessException(ErrorCode.BOARD_NOT_FOUND));
+                .orElseThrow(BoardNotFoundException::new);
 
-        Member member=memberRepository.findByEmail(email).orElseThrow(()->new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+        Member member=memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
+
+        validateSameSchool(member, board.getMember());
 
         if(!isBoardLoved(member,board)){
             board.increaseLoveCount();
@@ -67,6 +72,12 @@ public class LoveService {
         Love love=loveRepository.findByMemberAndBoard(member,board)
                 .orElseThrow(()-> new BusinessException(ErrorCode.LOVE_NOT_FOUND));
         loveRepository.delete(love);
+    }
+
+    private void validateSameSchool(Member a, Member b) {
+        if (!a.getSchool().getId().equals(b.getSchool().getId())) {
+            throw new LoveNotOwnerException();
+        }
     }
 
 

@@ -21,6 +21,9 @@ public enum ErrorCode {
     BOARD_CREATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "게시글 작성에 실패했습니다."),
     KEYWORD_REQUIRED(HttpStatus.BAD_REQUEST, "검색어를 입력해주세요."),
     NO_PERMISSION_TO_DELETE_BOARD(HttpStatus.FORBIDDEN, "게시글 삭제 권한이 없습니다."),
+    NO_PERMISSION_TO_VIEW_BOARD(HttpStatus.FORBIDDEN, "게시글 조회 권한이 없습니다."),
+    BOARD_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "게시글 접근 권한이 없습니다."),
+
 
     //comment
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글이 존재하지 않습니다."),
@@ -29,10 +32,13 @@ public enum ErrorCode {
     //love
     LOVE_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 좋아요한 게시글입니다."),
     LOVE_NOT_FOUND(HttpStatus.NOT_FOUND, "좋아요가 존재하지 않습니다."),
+    NO_PERMISSION_TO_LOVE_BOARD(HttpStatus.FORBIDDEN,"좋아요 권한이 없습니다."),
+
 
     //scrap
     SCRAP_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 스크랩한 게시글입니다."),
     SCRAP_NOT_FOUND(HttpStatus.NOT_FOUND, "스크랩 정보가 존재하지 않습니다."),
+    NO_PERMISSION_TO_SCRAP_BOARD(HttpStatus.FORBIDDEN,"스크랩 권한이 없습니다."),
 
     //message
     MESSAGE_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "쪽지방을 찾을 수 없습니다."),
@@ -42,6 +48,7 @@ public enum ErrorCode {
     COMMENT_ANONYMOUS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 익명번호의 댓글이 존재하지 않습니다."),
     INVALID_MESSAGE_TARGET(HttpStatus.BAD_REQUEST, "쪽지 대상은 게시글 작성자 또는 특정 댓글러 중 하나만 지정할 수 있습니다."),
     MESSAGE_ROOM_PERMISSION_DENIED(HttpStatus.FORBIDDEN,"이 쪽지방에 메시지를 보낼 권한이 없습니다."),
+    MESSAGE_PERMISSION_DENIED(HttpStatus.FORBIDDEN,"이 쪽지방에 메시지를 보낼 권한이 없습니다."),
 
 
     //Meal
