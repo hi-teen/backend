@@ -13,7 +13,7 @@ public interface BoardRepository extends JpaRepository<Board,Long> {
 
     List<Board> findAllByMemberAndMember_School_Id(Member member, Long schoolId);
 
-    @Query("SELECT board FROM Board board WHERE (board.viewCount+board.loveCount)>=30")
+    @Query("SELECT board FROM Board board WHERE (board.viewCount + board.loveCount) >= 30 AND board.member.school.id = :schoolId")
     List<Board> findPopularBoardsBySchool(Long schoolId);
 
     @Query("""
