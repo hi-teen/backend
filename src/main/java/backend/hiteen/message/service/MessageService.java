@@ -7,7 +7,12 @@ import backend.hiteen.board.repository.BoardRepository;
 import backend.hiteen.comment.entity.Comment;
 import backend.hiteen.comment.repository.CommentRepository;
 import backend.hiteen.common.response.ApiResponse;
+import backend.hiteen.common.response.ErrorCode;
 import backend.hiteen.common.response.SuccessCode;
+import backend.hiteen.global.exception.BusinessException;
+import backend.hiteen.member.entity.Member;
+import backend.hiteen.member.exception.MemberNotFoundException;
+import backend.hiteen.member.repository.MemberRepository;
 import backend.hiteen.message.dto.request.MessageRequest;
 import backend.hiteen.message.dto.response.MessageResponse;
 import backend.hiteen.message.dto.response.MessageRoomListResponse;
@@ -33,6 +38,7 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+    private final MemberRepository memberRepository;
     private final MessageRoomRepository messageRoomRepository;
     private final MessageAsyncService messageAsyncService;
 
@@ -67,6 +73,15 @@ public class MessageService {
         }
         else {
             throw new MessageTargetNotSpecifiedException();
+        }
+
+        Member sender = memberRepository.findById(memberId)
+                .orElseThrow(MemberNotFoundException::new);
+        Member receiver = memberRepository.findById(receiverId)
+                .orElseThrow(MemberNotFoundException::new);
+
+        if (!sender.getSchool().getId().equals(receiver.getSchool().getId())) {
+            throw new BusinessException(ErrorCode.MESSAGE_PERMISSION_DENIED);
         }
 
         MessageRoom room = messageRoomRepository

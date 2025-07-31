@@ -9,10 +9,23 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface BoardRepository extends JpaRepository<Board,Long> {
-    List<Board> findAllByMember(Member member);
-    @Query("SELECT board FROM Board board WHERE (board.viewCount+board.loveCount)>=30")
-    List<Board> findPopularBoards();
+    List<Board> findAllByMember_School_Id(Long schoolId);
 
-    @Query("SELECT board FROM Board board WHERE board.title LIKE %:keyword% OR board.content LIKE %:keyword% OR board.member.name LIKE %:keyword% ORDER BY board.createdAt DESC")
-    List<Board> searchByKeyword(@Param("keyword") String keyword);
+    List<Board> findAllByMemberAndMember_School_Id(Member member, Long schoolId);
+
+    @Query("SELECT board FROM Board board WHERE (board.viewCount+board.loveCount)>=30")
+    List<Board> findPopularBoardsBySchool(Long schoolId);
+
+    @Query("""
+    SELECT board FROM Board board
+    WHERE board.member.school.id = :schoolId
+      AND (
+           board.title LIKE %:keyword%
+        OR board.content LIKE %:keyword%
+        OR board.member.name LIKE %:keyword%
+      )
+    ORDER BY board.createdAt DESC
+""")
+    List<Board> searchByKeyword(@Param("keyword") String keyword, @Param("schoolId") Long schoolId);
+
 }
