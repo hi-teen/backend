@@ -18,9 +18,3 @@ spring:
 openapi:
   base-url: https://open.neis.go.kr/hub
   api-key: ${NEIS_API_KEY}
-
-logging:
-  level:
-    org.springframework.web: DEBUG
-    org.springframework.security: DEBUG
-
