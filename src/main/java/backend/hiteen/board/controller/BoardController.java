@@ -70,6 +70,7 @@ public class BoardController {
     }
 
     @DeleteMapping("/{boardId}")
+    @Operation(summary ="게시글 삭제", description = "게시글을 삭제합니다.")
     public ResponseEntity<ApiResponse<Void>> deleteBoard(@AuthenticationPrincipal CustomUserPrincipal principal, @PathVariable Long boardId){
         boardService.deleteBoard(principal.getUsername(),boardId);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.BOARD_DELETED));
