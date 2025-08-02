@@ -3,9 +3,7 @@ package backend.hiteen.board.service;
 import backend.hiteen.board.dto.request.BoardCreateRequest;
 import backend.hiteen.board.dto.response.BoardResponse;
 import backend.hiteen.board.entity.Board;
-import backend.hiteen.board.exception.BoardNotFoundException;
-import backend.hiteen.board.exception.KeywordRequiredException;
-import backend.hiteen.board.exception.NoPermissionToDeleteBoardException;
+import backend.hiteen.board.exception.*;
 import backend.hiteen.board.exception.BoardNotFoundException;
 import backend.hiteen.board.repository.BoardRepository;
 import backend.hiteen.member.entity.Member;
@@ -117,7 +115,7 @@ public class BoardService {
 
     private void validateSameSchool(Member a, Member b) {
         if (!a.getSchool().getId().equals(b.getSchool().getId())) {
-            throw new BusinessException(ErrorCode.BOARD_PERMISSION_DENIED);
+            throw new BoardNotOwnerException();
         }
     }
 
