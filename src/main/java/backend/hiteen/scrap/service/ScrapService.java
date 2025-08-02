@@ -3,8 +3,6 @@ package backend.hiteen.scrap.service;
 import backend.hiteen.board.entity.Board;
 import backend.hiteen.board.exception.BoardNotFoundException;
 import backend.hiteen.board.repository.BoardRepository;
-import backend.hiteen.common.response.ErrorCode;
-import backend.hiteen.global.exception.BusinessException;
 import backend.hiteen.member.entity.Member;
 import backend.hiteen.member.exception.MemberNotFoundException;
 import backend.hiteen.member.repository.MemberRepository;
