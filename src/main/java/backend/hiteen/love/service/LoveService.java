@@ -7,6 +7,7 @@ import backend.hiteen.love.dto.LoveBoardResponse;
 import backend.hiteen.love.entity.Love;
 import backend.hiteen.love.entity.LoveActionResult;
 import backend.hiteen.love.exception.LoveNotFoundException;
+import backend.hiteen.love.exception.LoveNotOwnerException;
 import backend.hiteen.love.repository.LoveRepository;
 import backend.hiteen.member.entity.Member;
 import backend.hiteen.member.exception.MemberNotFoundException;
@@ -33,6 +34,8 @@ public class LoveService {
                 .orElseThrow(BoardNotFoundException::new);
 
         Member member=memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
+
+        validateSameSchool(member, board.getMember());
 
         if(!isBoardLoved(member,board)){
             board.increaseLoveCount();
@@ -68,6 +71,12 @@ public class LoveService {
         Love love=loveRepository.findByMemberAndBoard(member,board)
                 .orElseThrow(LoveNotFoundException::new);
         loveRepository.delete(love);
+    }
+
+    private void validateSameSchool(Member a, Member b) {
+        if (!a.getSchool().getId().equals(b.getSchool().getId())) {
+            throw new LoveNotOwnerException();
+        }
     }
 
 
