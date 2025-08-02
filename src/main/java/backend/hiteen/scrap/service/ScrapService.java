@@ -10,6 +10,7 @@ import backend.hiteen.scrap.dto.ScrapBoardResponse;
 import backend.hiteen.scrap.entity.Scrap;
 import backend.hiteen.scrap.entity.ScrapActionResult;
 import backend.hiteen.scrap.exception.ScrapNotFoundException;
+import backend.hiteen.scrap.exception.ScrapNotOwnerException;
 import backend.hiteen.scrap.repository.ScrapRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,8 @@ public class ScrapService {
 
         Board board=boardRepository.findById(boardId)
                 .orElseThrow(BoardNotFoundException::new);
+
+        validateSameSchool(member, board.getMember());
 
         if (!isBoardScrapped(member, board)){
             board.increaseScrapCount();
@@ -70,4 +73,12 @@ public class ScrapService {
                 .orElseThrow(ScrapNotFoundException::new);
         scrapRepository.delete(scrap);
     }
+
+
+    private void validateSameSchool(Member a, Member b) {
+        if (!a.getSchool().getId().equals(b.getSchool().getId())) {
+            throw new ScrapNotOwnerException();
+        }
+    }
+
 }

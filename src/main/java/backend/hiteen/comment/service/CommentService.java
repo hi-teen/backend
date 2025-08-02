@@ -40,6 +40,8 @@ public class CommentService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(BoardNotFoundException::new);
 
+        validateSameSchool(member, board.getMember());
+
         int nextAnonNumber = nextAnonymousNumber(board);
 
         Comment comment = Comment.builder()
@@ -72,6 +74,9 @@ public class CommentService {
                 .orElseThrow(CommentNotFoundException::new);
 
         Board board = parentComment.getBoard();
+
+        validateSameSchool(member, board.getMember());
+
         int nextAnonNumber = nextAnonymousNumber(board);
 
         Comment replycomment = Comment.builder()
@@ -105,13 +110,14 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<CommentResponseDto> getComments(Long boardId, Long memberId) {
-        if (!boardRepository.existsById(boardId)) {
-            throw new BoardNotFoundException();
-        }
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(BoardNotFoundException::new);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(MemberNotFoundException::new);
+
+        validateSameSchool(member, board.getMember());
 
         List<Comment> topLevelComments = commentRepository.findRootsByBoardId(boardId);
-        Member member = memberId == null ? null : memberRepository.findById(memberId)
-                .orElse(null);
 
         return topLevelComments.stream()
                 .map(c -> covertToDto(c, member))
@@ -143,6 +149,8 @@ public class CommentService {
                 .orElseThrow(CommentNotFoundException::new);
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
+
+        validateSameSchool(member, comment.getBoard().getMember());
 
         Optional<CommentLike> optionalLike = commentLikeRepository.findByCommentAndMember(comment, member);
 
@@ -208,6 +216,13 @@ public class CommentService {
                 replies
                 );
     }
+
+    private void validateSameSchool(Member a, Member b) {
+        if (!a.getSchool().getId().equals(b.getSchool().getId())) {
+            throw new CommentNotOwnerException();
+        }
     }
+
+}
 
 
