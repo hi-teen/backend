@@ -38,6 +38,11 @@ public class MemberService {
         return new MemberResponse(member);
     }
 
+    //이메일 중복 확인
+    public void checkEmailAvailable(String email){
+        validateDuplicateEmail(email);
+    }
+
 
     //이메일 중복 예외처리
     private void validateDuplicateEmail(String email){
