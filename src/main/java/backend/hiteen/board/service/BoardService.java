@@ -3,10 +3,9 @@ package backend.hiteen.board.service;
 import backend.hiteen.board.dto.request.BoardCreateRequest;
 import backend.hiteen.board.dto.response.BoardResponse;
 import backend.hiteen.board.entity.Board;
+import backend.hiteen.board.exception.*;
 import backend.hiteen.board.exception.BoardNotFoundException;
 import backend.hiteen.board.repository.BoardRepository;
-import backend.hiteen.common.response.ErrorCode;
-import backend.hiteen.global.exception.BusinessException;
 import backend.hiteen.member.entity.Member;
 import backend.hiteen.member.exception.MemberNotFoundException;
 import backend.hiteen.member.repository.MemberRepository;
@@ -27,7 +26,7 @@ public class BoardService {
     @Transactional
     public BoardResponse createBoard(String email, final BoardCreateRequest request) {
 
-        Member member=memberRepository.findByEmail(email).orElseThrow(()->new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+        Member member=memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
 
         Board board = Board.create(member,
                                    request.getTitle(),
@@ -94,7 +93,7 @@ public class BoardService {
         Long schoolId = member.getSchool().getId();
 
         if (keyword == null || keyword.trim().isEmpty()) {
-            throw new BusinessException(ErrorCode.KEYWORD_REQUIRED);
+            throw new KeywordRequiredException();
         }
 
         List<Board> boards=boardRepository.searchByKeyword(keyword, schoolId);
@@ -103,12 +102,12 @@ public class BoardService {
 
     //게시글 삭제
     public void deleteBoard(String email, Long boardId){
-        Member member=memberRepository.findByEmail(email).orElseThrow(()-> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+        Member member=memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
 
         Board board=boardRepository.findById(boardId).orElseThrow(BoardNotFoundException::new);
 
         if(!board.getMember().equals(member)){
-            throw new BusinessException(ErrorCode.NO_PERMISSION_TO_DELETE_BOARD);
+            throw new NoPermissionToDeleteBoardException();
         }
 
         boardRepository.delete(board);
@@ -116,7 +115,7 @@ public class BoardService {
 
     private void validateSameSchool(Member a, Member b) {
         if (!a.getSchool().getId().equals(b.getSchool().getId())) {
-            throw new BusinessException(ErrorCode.BOARD_PERMISSION_DENIED);
+            throw new BoardNotOwnerException();
         }
     }
 

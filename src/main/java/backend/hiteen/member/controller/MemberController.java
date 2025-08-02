@@ -30,6 +30,13 @@ public class MemberController {
         return ResponseEntity.status(SuccessCode.MEMBER_REGISTERED.getStatus()).body(ApiResponse.success(SuccessCode.MEMBER_REGISTERED, memberResponse));
     }
 
+    @GetMapping("/email/availability")
+    @Operation(summary = "이메일 중복 확인", description = "이메일 중복 확인을 합니다.")
+    public ResponseEntity<ApiResponse<Void>> checkEmailAvailable(@Valid @RequestParam String email){
+        memberService.checkEmailAvailable(email);
+        return ResponseEntity.status(SuccessCode.MEMBER_EMAIL_AVAILABLE.getStatus()).body(ApiResponse.success(SuccessCode.MEMBER_EMAIL_AVAILABLE));
+    }
+
     // 내 정보 조회
     @GetMapping("/me")
     @Operation(summary = "내 정보 조회", description = "로그인된 내 회원 정보를 조회합니다.")

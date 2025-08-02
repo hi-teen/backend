@@ -3,11 +3,10 @@ package backend.hiteen.love.service;
 import backend.hiteen.board.entity.Board;
 import backend.hiteen.board.exception.BoardNotFoundException;
 import backend.hiteen.board.repository.BoardRepository;
-import backend.hiteen.common.response.ErrorCode;
-import backend.hiteen.global.exception.BusinessException;
 import backend.hiteen.love.dto.LoveBoardResponse;
 import backend.hiteen.love.entity.Love;
 import backend.hiteen.love.entity.LoveActionResult;
+import backend.hiteen.love.exception.LoveNotFoundException;
 import backend.hiteen.love.exception.LoveNotOwnerException;
 import backend.hiteen.love.repository.LoveRepository;
 import backend.hiteen.member.entity.Member;
@@ -52,7 +51,7 @@ public class LoveService {
     @Transactional(readOnly = true)
     public List<LoveBoardResponse> getMyLovedBoards(String email){
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(MemberNotFoundException::new);
 
         List<Board> boards=loveRepository.findLovedBoardsByMemberId(member.getId());
 
@@ -70,7 +69,7 @@ public class LoveService {
 
     private void deleteLove(Member member, Board board){
         Love love=loveRepository.findByMemberAndBoard(member,board)
-                .orElseThrow(()-> new BusinessException(ErrorCode.LOVE_NOT_FOUND));
+                .orElseThrow(LoveNotFoundException::new);
         loveRepository.delete(love);
     }
 
