@@ -17,6 +17,7 @@ public class BoardResponse {
     private final String categoryLabel;
     private final int loveCount;
     private final int scrapCount;
+    private final int commentCount;
     private final Long viewCount;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
@@ -31,6 +32,7 @@ public class BoardResponse {
         this.content=board.getContent();
         this.loveCount=board.getLoveCount();
         this.scrapCount= board.getScrapCount();
+        this.commentCount=board.getCommentCount();
         this.createdAt = board.getCreatedAt();
         this.viewCount=board.getViewCount();
     }

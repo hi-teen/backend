@@ -3,13 +3,17 @@ package backend.hiteen.board.service;
 import backend.hiteen.board.dto.request.BoardCreateRequest;
 import backend.hiteen.board.dto.response.BoardResponse;
 import backend.hiteen.board.entity.Board;
-import backend.hiteen.board.exception.*;
 import backend.hiteen.board.exception.BoardNotFoundException;
+import backend.hiteen.board.exception.BoardNotOwnerException;
+import backend.hiteen.board.exception.KeywordRequiredException;
+import backend.hiteen.board.exception.NoPermissionToDeleteBoardException;
 import backend.hiteen.board.repository.BoardRepository;
+import backend.hiteen.comment.repository.CommentRepository;
 import backend.hiteen.member.entity.Member;
 import backend.hiteen.member.exception.MemberNotFoundException;
 import backend.hiteen.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +21,11 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class BoardService {
+public class BoardService implements CommandLineRunner {
 
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
+    private final CommentRepository commentRepository;
 
     // 게시글 작성
     @Transactional
@@ -117,6 +122,27 @@ public class BoardService {
         if (!a.getSchool().getId().equals(b.getSchool().getId())) {
             throw new BoardNotOwnerException();
         }
+    }
+
+    @Override
+    @Transactional
+    public void run(String... args) {
+        initializeCommentCounts();
+    }
+
+    private void initializeCommentCounts() {
+        List<Board> boards = boardRepository.findAll();
+
+        for (Board board : boards) {
+            int actualCommentCount = commentRepository.countByBoardId(board.getId());
+            int currentCommentCount = board.getCommentCount();
+
+            // 실제 댓글 수와 현재 카운트가 다르면 업데이트
+            if (actualCommentCount != currentCommentCount) {
+                board.setCommentCount(actualCommentCount);
+            }
+        }
+        boardRepository.saveAll(boards);
     }
 
 }
