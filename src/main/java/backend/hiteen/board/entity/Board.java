@@ -42,6 +42,9 @@ public class Board extends BaseTimeEntity {
     @Column
     private int scrapCount;
 
+    @Column
+    private Integer commentCount;
+
     @Column(nullable = false)
     private Long viewCount = 0L;
 
@@ -62,6 +65,7 @@ public class Board extends BaseTimeEntity {
         this.content = content;
         this.loveCount = 0;
         this.scrapCount = 0;
+        this.commentCount = 0;
         this.disclosureStatus = disclosureStatus;
         this.category = category;
     }
@@ -94,6 +98,22 @@ public class Board extends BaseTimeEntity {
 
     public void decreaseScrapCount() {
         this.scrapCount -= 1;
+    }
+
+    public void increaseCommentCount() {
+        this.commentCount = (this.commentCount == null ? 0 : this.commentCount) + 1;
+    }
+
+    public void decreaseCommentCount() {
+        this.commentCount = (this.commentCount == null ? 1 : this.commentCount) - 1;
+    }
+
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
+    }
+
+    public int getCommentCount() {
+        return this.commentCount == null ? 0 : this.commentCount;
     }
 
     public void increaseViewCount() {

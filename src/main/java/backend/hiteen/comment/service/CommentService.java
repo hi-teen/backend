@@ -51,6 +51,9 @@ public class CommentService {
                 .anonymousNumber(nextAnonNumber)
                 .build();
         commentRepository.save(comment);
+        
+        // 댓글 카운트 증가
+        board.increaseCommentCount();
 
         boolean isBoardWriter = comment.getMember().getId().equals(board.getMember().getId());
 
@@ -88,6 +91,9 @@ public class CommentService {
                 .build();
 
         commentRepository.save(replycomment);
+        
+        // 댓글 카운트 증가 (대댓글도 포함)
+        board.increaseCommentCount();
 
         boolean replyIsBoardWriter = replycomment.getMember().getId().equals(board.getMember().getId());
 
@@ -177,6 +183,16 @@ public class CommentService {
 
         if (!comment.getMember().getId().equals(memberId)) {
             throw new CommentNotOwnerException();
+        }
+        
+        Board board = comment.getBoard();
+        
+        // 삭제될 댓글 수 계산 (본 댓글 + 모든 대댓글)
+        int deletedCommentsCount = 1 + comment.getChildrenComment().size();
+        
+        // 댓글 삭제 시 카운트 감소
+        for (int i = 0; i < deletedCommentsCount; i++) {
+            board.decreaseCommentCount();
         }
 
         commentRepository.delete(comment);
