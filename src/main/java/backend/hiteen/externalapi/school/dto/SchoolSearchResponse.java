@@ -2,5 +2,6 @@ package backend.hiteen.externalapi.school.dto;
 
 public record SchoolSearchResponse(
         Long id,
-        String schoolName
+        String schoolName,
+        String eduOfficeName
 ) {}

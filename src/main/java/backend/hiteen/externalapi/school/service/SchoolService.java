@@ -94,7 +94,9 @@ public class SchoolService {
         return schoolRepository.findBySchoolNameContainingAndKind(keyword, "고등학교")
                 .stream()
                 .map(s -> new SchoolSearchResponse(s.getId(),
-                                                   s.getSchoolName()))
+                                                   s.getSchoolName(),
+                                                   s.getEduOfficeName()
+                ))
                 .toList();
     }
 
