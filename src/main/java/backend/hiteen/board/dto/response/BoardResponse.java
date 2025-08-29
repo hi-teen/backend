@@ -18,7 +18,7 @@ public class BoardResponse {
     private final int loveCount;
     private final int scrapCount;
     private final int commentCount;
-    private final Long viewCount;
+    private final int viewCount;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private final LocalDateTime createdAt;

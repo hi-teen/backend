@@ -66,7 +66,7 @@ public class BoardService implements CommandLineRunner {
 
 
     //게시글 단일 조회 - 모든 사용자에 대한
-    @Transactional(readOnly = true)
+    @Transactional
     public BoardResponse getBoardById(Long boardId, Long memberId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(BoardNotFoundException::new);
