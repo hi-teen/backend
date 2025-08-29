@@ -46,7 +46,7 @@ public class Board extends BaseTimeEntity {
     private Integer commentCount;
 
     @Column(nullable = false)
-    private Long viewCount = 0L;
+    private int viewCount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
