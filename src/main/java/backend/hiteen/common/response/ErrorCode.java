@@ -16,6 +16,13 @@ public enum ErrorCode {
     MEMBER_REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "저장된 Refresh Token이 없습니다."),
     MEMBER_REFRESH_TOKEN_MISMATCH(HttpStatus.UNAUTHORIZED, "Refresh Token이 일치하지 않습니다."),
 
+    // Referral
+    REFERRAL_CODE_NOT_FOUND(HttpStatus.NOT_FOUND, "추천 코드가 존재하지 않습니다."),
+    REFERRAL_SELF_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "자기 자신의 추천 코드는 사용할 수 없습니다."),
+    REFERRAL_ALREADY_ASSIGNED(HttpStatus.CONFLICT, "이미 추천인이 등록된 회원입니다."),
+    REFERRAL_REFERRER_NOT_FOUND(HttpStatus.NOT_FOUND, "나를 추천한 회원이 존재하지 않습니다."),
+
+
     //Board
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."),
     BOARD_CREATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "게시글 작성에 실패했습니다."),

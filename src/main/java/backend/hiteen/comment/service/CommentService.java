@@ -13,7 +13,7 @@ import backend.hiteen.comment.exception.CommentNotOwnerException;
 import backend.hiteen.comment.repository.CommentLikeRepository;
 import backend.hiteen.comment.repository.CommentRepository;
 import backend.hiteen.member.entity.Member;
-import backend.hiteen.member.exception.MemberNotFoundException;
+import backend.hiteen.member.exception.member.MemberNotFoundException;
 import backend.hiteen.member.repository.MemberRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

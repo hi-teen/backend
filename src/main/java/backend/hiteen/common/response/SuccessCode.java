@@ -15,6 +15,12 @@ public enum SuccessCode {
     MEMBER_REISSUED(HttpStatus.OK, "토큰이 재발급되었습니다."),
     MEMBER_CURRENT_INFO_FETCHED(HttpStatus.OK, "현재 로그인 된 사용자입니다."),
     MEMBER_LOGOUT(HttpStatus.OK, "로그아웃되었습니다."),
+    MEMBER_COUNT_FETCHED(HttpStatus.OK, "회원 수를 조회했습니다."),
+
+    // Referral
+    REFERRAL_CODE_FETCHED(HttpStatus.OK, "추천 코드를 조회했습니다."),
+    REFERRAL_LIST_FETCHED(HttpStatus.OK, "내가 추천한 회원 목록을 조회했습니다."),
+    REFERRAL_REFERRER_FETCHED(HttpStatus.OK, "나를 추천한 회원을 조회했습니다."),
 
 
     //Board

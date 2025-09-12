@@ -5,6 +5,7 @@ import backend.hiteen.member.entity.Member;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,6 +34,9 @@ public class MemberCreateRequest {
     private int gradeNumber;
 
     private int classNumber;
+
+    @Size(max = 20, message = "추천 코드는 최대 20자입니다.")
+    private String referralCode;
 
     public Member toEntity(School school, PasswordEncoder encoder){
         return Member.builder()

@@ -11,7 +11,7 @@ import backend.hiteen.common.response.ErrorCode;
 import backend.hiteen.common.response.SuccessCode;
 import backend.hiteen.global.exception.BusinessException;
 import backend.hiteen.member.entity.Member;
-import backend.hiteen.member.exception.MemberNotFoundException;
+import backend.hiteen.member.exception.member.MemberNotFoundException;
 import backend.hiteen.member.repository.MemberRepository;
 import backend.hiteen.message.dto.request.MessageRequest;
 import backend.hiteen.message.dto.response.MessageResponse;
