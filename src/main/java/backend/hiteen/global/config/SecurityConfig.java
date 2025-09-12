@@ -38,6 +38,7 @@ public class SecurityConfig {
                                          "/api/v1/members/sign-up",
                                         "/api/v1/members/email/availability",
                                          "/api/v1/members/count",
+                                         "/api/v1/members/referral/validate",
                                          "/swagger-ui/**",
                                          "/v3/api-docs/**",
                                          "/actuator/**",
