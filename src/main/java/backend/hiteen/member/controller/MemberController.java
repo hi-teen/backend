@@ -6,6 +6,7 @@ import backend.hiteen.common.response.SuccessCode;
 import backend.hiteen.member.dto.request.MemberCreateRequest;
 import backend.hiteen.member.dto.request.MemberUpdateRequest;
 import backend.hiteen.member.dto.response.MemberResponse;
+import backend.hiteen.member.dto.response.ReferralListResponse;
 import backend.hiteen.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,17 +25,22 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/sign-up")
-    @Operation(summary = "회원가입",description = "사용자가 회원가입을 합니다. 비밀번호는 6자 이상이며, 영문자와 숫자를 최소 1자 이상 포함해야 합니다.")
+    @Operation(summary = "회원가입",description = "사용자가 회원가입을 합니다. 비밀번호는 6자 이상이며, 영문자와 숫자를 최소 1자 이상 포함해야 합니다. " +
+            "친구 추천코드를 입력할 수 있습니다.(선택)")
     public ResponseEntity<ApiResponse<MemberResponse>> signUp(@Valid @RequestBody MemberCreateRequest request){
         MemberResponse memberResponse= memberService.signUp(request);
-        return ResponseEntity.status(SuccessCode.MEMBER_REGISTERED.getStatus()).body(ApiResponse.success(SuccessCode.MEMBER_REGISTERED, memberResponse));
+        return ResponseEntity
+                .status(SuccessCode.MEMBER_REGISTERED.getStatus())
+                .body(ApiResponse.success(SuccessCode.MEMBER_REGISTERED, memberResponse));
     }
 
     @GetMapping("/email/availability")
     @Operation(summary = "이메일 중복 확인", description = "이메일 중복 확인을 합니다.")
     public ResponseEntity<ApiResponse<Void>> checkEmailAvailable(@Valid @RequestParam String email){
         memberService.checkEmailAvailable(email);
-        return ResponseEntity.status(SuccessCode.MEMBER_EMAIL_AVAILABLE.getStatus()).body(ApiResponse.success(SuccessCode.MEMBER_EMAIL_AVAILABLE));
+        return ResponseEntity
+                .status(SuccessCode.MEMBER_EMAIL_AVAILABLE.getStatus())
+                .body(ApiResponse.success(SuccessCode.MEMBER_EMAIL_AVAILABLE));
     }
 
     // 내 정보 조회
@@ -63,4 +69,55 @@ public class MemberController {
                 .status(SuccessCode.MEMBER_UPDATED.getStatus())
                 .body(ApiResponse.success(SuccessCode.MEMBER_UPDATED, res));
     }
+
+    @GetMapping("/me/referral-code")
+    @Operation(summary = "내 추천 코드 조회", description = "로그인한 회원의 추천 코드를 조회합니다.")
+    public ResponseEntity<ApiResponse<String>> getMyReferralCode(
+            @AuthenticationPrincipal CustomUserPrincipal principal
+    ) {
+        Long memberId = principal.getId();
+        String code = memberService.getReferralCode(memberId);
+
+        return ResponseEntity
+                .status(SuccessCode.REFERRAL_CODE_FETCHED.getStatus())
+                .body(ApiResponse.success(SuccessCode.REFERRAL_CODE_FETCHED, code));
+    }
+
+    @GetMapping("/me/referred")
+    @Operation(summary = "내가 추천한 회원 목록+갯수 조회",
+            description = "내 추천코드로 가입한 회원들의 목록과 그 수를 조회합니다.")
+    public ResponseEntity<ApiResponse<ReferralListResponse>> getMyReferredMembers(
+            @AuthenticationPrincipal CustomUserPrincipal principal
+    ) {
+        Long memberId = principal.getId();
+        ReferralListResponse res = memberService.getMyReferredMembers(memberId);
+
+        return ResponseEntity
+                .status(SuccessCode.REFERRAL_LIST_FETCHED.getStatus())
+                .body(ApiResponse.success(SuccessCode.REFERRAL_LIST_FETCHED, res));
+    }
+
+    @GetMapping("/referral/validate")
+    @Operation(
+            summary = "추천코드 유효성 확인",
+            description = "입력된 추천코드가 존재하는지 검증합니다. 존재하면 true, 아니면 false"
+    )
+    public ResponseEntity<ApiResponse<Boolean>> validateReferralCode(
+            @RequestParam("code") String code
+    ) {
+        boolean exists = memberService.existsByReferralCode(code);
+        return ResponseEntity
+                .status(SuccessCode.REFERRAL_CODE_FETCHED.getStatus())
+                .body(ApiResponse.success(SuccessCode.REFERRAL_CODE_FETCHED, exists));
+    }
+
+    @GetMapping("/count")
+    @Operation(summary = "학교별 회원 수 조회", description = "schoolId 기준으로 회원 수를 조회합니다.")
+    public ResponseEntity<ApiResponse<Long>> countBySchool(@RequestParam Long schoolId) {
+        long count = memberService.countMembersBySchool(schoolId);
+        return ResponseEntity
+                .status(SuccessCode.MEMBER_COUNT_FETCHED.getStatus())
+                .body(ApiResponse.success(SuccessCode.MEMBER_COUNT_FETCHED, count));
+    }
+
 }

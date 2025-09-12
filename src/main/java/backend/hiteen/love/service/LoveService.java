@@ -10,7 +10,7 @@ import backend.hiteen.love.exception.LoveNotFoundException;
 import backend.hiteen.love.exception.LoveNotOwnerException;
 import backend.hiteen.love.repository.LoveRepository;
 import backend.hiteen.member.entity.Member;
-import backend.hiteen.member.exception.MemberNotFoundException;
+import backend.hiteen.member.exception.member.MemberNotFoundException;
 import backend.hiteen.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
