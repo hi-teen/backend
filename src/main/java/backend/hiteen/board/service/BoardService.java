@@ -10,7 +10,7 @@ import backend.hiteen.board.exception.NoPermissionToDeleteBoardException;
 import backend.hiteen.board.repository.BoardRepository;
 import backend.hiteen.comment.repository.CommentRepository;
 import backend.hiteen.member.entity.Member;
-import backend.hiteen.member.exception.MemberNotFoundException;
+import backend.hiteen.member.exception.member.MemberNotFoundException;
 import backend.hiteen.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;

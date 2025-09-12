@@ -4,7 +4,7 @@ import backend.hiteen.board.entity.Board;
 import backend.hiteen.board.exception.BoardNotFoundException;
 import backend.hiteen.board.repository.BoardRepository;
 import backend.hiteen.member.entity.Member;
-import backend.hiteen.member.exception.MemberNotFoundException;
+import backend.hiteen.member.exception.member.MemberNotFoundException;
 import backend.hiteen.member.repository.MemberRepository;
 import backend.hiteen.scrap.dto.ScrapBoardResponse;
 import backend.hiteen.scrap.entity.Scrap;

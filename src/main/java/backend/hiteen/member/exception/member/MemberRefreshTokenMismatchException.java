@@ -1,4 +1,4 @@
-package backend.hiteen.member.exception;
+package backend.hiteen.member.exception.member;
 
 import backend.hiteen.common.response.ErrorCode;
 import backend.hiteen.global.exception.BusinessException;
