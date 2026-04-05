@@ -3,6 +3,6 @@ COPY --chown=gradle:gradle . /app
 WORKDIR /app
 RUN gradle build -x test
 
-FROM openjdk:17
+FROM eclipse-temurin:17-jdk
 COPY --from=build /app/build/libs/*.jar app.jar
 ENTRYPOINT ["java", "-jar", "/app.jar"]
