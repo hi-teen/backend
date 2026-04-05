@@ -37,7 +37,7 @@ public class CommentService {
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
-        Board board = boardRepository.findById(boardId)
+        Board board = boardRepository.findByIdWithPessimisticLock(boardId)
                 .orElseThrow(BoardNotFoundException::new);
 
         validateSameSchool(member, board.getMember());
