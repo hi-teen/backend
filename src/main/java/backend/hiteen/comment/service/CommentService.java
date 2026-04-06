@@ -16,6 +16,8 @@ import backend.hiteen.member.entity.Member;
 import backend.hiteen.member.exception.member.MemberNotFoundException;
 import backend.hiteen.member.repository.MemberRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -115,7 +117,7 @@ public class CommentService {
 
 
     @Transactional(readOnly = true)
-    public List<CommentResponseDto> getComments(Long boardId, Long memberId) {
+    public Page<CommentResponseDto> getComments(Long boardId, Long memberId, Pageable pageable) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(BoardNotFoundException::new);
         Member member = memberRepository.findById(memberId)
@@ -123,11 +125,10 @@ public class CommentService {
 
         validateSameSchool(member, board.getMember());
 
-        List<Comment> topLevelComments = commentRepository.findRootsByBoardId(boardId);
+        Page<Comment> topLevelComments = commentRepository.findRootsByBoardId(boardId, pageable);
 
-        return topLevelComments.stream()
-                .map(c -> covertToDto(c, member))
-                .toList();
+        return topLevelComments
+                .map(c -> covertToDto(c, member));
     }
 
     @Transactional(readOnly = true)

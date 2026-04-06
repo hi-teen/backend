@@ -2,6 +2,8 @@ package backend.hiteen.comment.repository;
 
 import backend.hiteen.comment.entity.Comment;
 import backend.hiteen.member.entity.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,7 +19,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     Integer findMaxAnonymousNumberByBoardId(@Param("boardId") Long boardId);
 
     @Query("SELECT c FROM Comment c WHERE c.board.id = :boardId AND c.parentComment IS NULL ORDER BY c.createdAt ASC")
-    List<Comment> findRootsByBoardId(@Param("boardId") Long boardId);
+    Page<Comment> findRootsByBoardId(@Param("boardId") Long boardId, Pageable pageable);
 
     @Query("SELECT COUNT(c) FROM Comment c WHERE c.board.id = :boardId")
     int countByBoardId(@Param("boardId") Long boardId);
@@ -27,6 +29,5 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findAllByMember(Member member);
 
     Optional<Comment> findByBoardIdAndAnonymousNumber(Long boardId, Integer anonymousNumber);
-
 
 }
