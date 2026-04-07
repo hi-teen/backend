@@ -13,6 +13,9 @@ import backend.hiteen.common.response.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -62,11 +65,12 @@ public class CommentController {
 
     @GetMapping("/board/{boardId}")
     @Operation(summary = "댓글 조회", description = "게시글에 달린 댓글과 대댓글을 모두 조회합니다.")
-    public ResponseEntity<ApiResponse<List<CommentResponseDto>>> getComments(
+    public ResponseEntity<ApiResponse<Page<CommentResponseDto>>> getComments(
             @AuthenticationPrincipal CustomUserPrincipal principal,
-            @PathVariable Long boardId) {
+            @PathVariable Long boardId,
+            @ParameterObject Pageable pageable) {
         Long memberId = principal != null ? principal.getId() : null;
-        List<CommentResponseDto> comments = commentService.getComments(boardId, memberId);
+        Page<CommentResponseDto> comments = commentService.getComments(boardId, memberId, pageable);
 
         return ResponseEntity
                 .status(SuccessCode.COMMENT_FETCHED.getStatus())
