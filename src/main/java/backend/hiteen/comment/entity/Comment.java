@@ -5,6 +5,7 @@ import backend.hiteen.global.entity.BaseTimeEntity;
 import backend.hiteen.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class Comment extends BaseTimeEntity {
 
     // 대댓글
     @Builder.Default
+    @BatchSize(size=100)
     @OneToMany(mappedBy = "parentComment", orphanRemoval = true)
     private List<Comment> childrenComment = new ArrayList<>();
 
