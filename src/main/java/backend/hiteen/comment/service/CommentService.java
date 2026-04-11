@@ -15,7 +15,10 @@ import backend.hiteen.comment.repository.CommentRepository;
 import backend.hiteen.member.entity.Member;
 import backend.hiteen.member.exception.member.MemberNotFoundException;
 import backend.hiteen.member.repository.MemberRepository;
+import backend.hiteen.global.util.RestPage;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,6 +38,7 @@ public class CommentService {
 
     // 댓글 등록
     @Transactional
+    @CacheEvict(value = "comments", allEntries = true)
     public CommentResponseDto addComment(Long memberId, Long boardId, String content) {
 
         Member member = memberRepository.findById(memberId)
@@ -72,6 +76,7 @@ public class CommentService {
     }
 
     @Transactional
+    @CacheEvict(value = "comments", allEntries = true)
     public ReplyCommentResponseDto addReplyComment(Long memberId,Long parentCommentId, String content) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
@@ -117,7 +122,8 @@ public class CommentService {
 
 
     @Transactional(readOnly = true)
-    public Page<CommentResponseDto> getComments(Long boardId, Long memberId, Pageable pageable) {
+    @Cacheable(value = "comments", key = "#boardId + '_' + #memberId + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
+    public RestPage<CommentResponseDto> getComments(Long boardId, Long memberId, Pageable pageable) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(BoardNotFoundException::new);
         Member member = memberRepository.findById(memberId)
@@ -127,8 +133,7 @@ public class CommentService {
 
         Page<Comment> topLevelComments = commentRepository.findRootsByBoardId(boardId, pageable);
 
-        return topLevelComments
-                .map(c -> covertToDto(c, member));
+        return new RestPage<>(topLevelComments.map(c -> covertToDto(c, member)));
     }
 
     @Transactional(readOnly = true)
@@ -151,6 +156,7 @@ public class CommentService {
     }
 
     @Transactional
+    @CacheEvict(value = "comments", allEntries = true)
     public CommentLikeResponse toggleLike(Long commentId, Long memberId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(CommentNotFoundException::new);
@@ -178,6 +184,7 @@ public class CommentService {
     }
 
     @Transactional
+    @CacheEvict(value = "comments", allEntries = true)
     public void deleteComment(Long memberId, Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(CommentNotFoundException::new);

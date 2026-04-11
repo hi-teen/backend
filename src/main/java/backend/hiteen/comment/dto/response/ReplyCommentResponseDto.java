@@ -3,12 +3,15 @@ package backend.hiteen.comment.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
-public class ReplyCommentResponseDto {
+public class ReplyCommentResponseDto implements Serializable {
 
     @Schema(description = "대댓글 id")
     private Long replyId;
