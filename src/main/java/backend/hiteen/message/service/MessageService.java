@@ -31,6 +31,8 @@ import org.springframework.web.context.request.async.DeferredResult;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -146,12 +148,26 @@ public class MessageService {
 
     public List<MessageRoomListResponse> getMyMessageRooms(Long memberId) {
         List<MessageRoom> rooms = messageRoomRepository.findAllByMemberOrderByUpdatedAtDesc(memberId);
+        if (rooms.isEmpty()) return List.of();
+
+        List<Long> roomIds = rooms.stream().map(MessageRoom::getId).toList();
+
+        // 마지막 메시지 한 번에 조회
+        Map<Long, Message> lastMessageMap = messageRepository.findLastMessagesByRoomIds(roomIds)
+                .stream()
+                .collect(Collectors.toMap(m -> m.getMessageRoom().getId(), m -> m));
+
+        // 읽지 않은 메시지 수 한 번에 조회
+        Map<Long, Long> unreadCountMap = messageRepository.countUnreadByRoomIds(roomIds, memberId)
+                .stream()
+                .collect(Collectors.toMap(
+                        row -> (Long) row[0],
+                        row -> (Long) row[1]
+                ));
 
         List<MessageRoomListResponse> result = new ArrayList<>();
         for (MessageRoom room : rooms) {
-            Message lastMsg = messageRepository
-                    .findTopByMessageRoomIdOrderByCreatedAtDesc(room.getId())
-                    .orElse(null);
+            Message lastMsg = lastMessageMap.get(room.getId());
 
             String lastMessage = lastMsg != null ? lastMsg.getContent() : null;
             LocalDateTime lastMessageTime = lastMsg != null ? lastMsg.getCreatedAt() : null;
@@ -160,7 +176,7 @@ public class MessageService {
             Long targetId = room.getSenderId().equals(memberId) ? room.getReceiverId() : room.getSenderId();
             String targetNickname = MessageMapper.computeDisplayName(room, targetId);
 
-            int unreadCount = messageRepository.countByMessageRoomIdAndReceiverIdAndIsReadFalse(room.getId(), memberId);
+            int unreadCount = unreadCountMap.getOrDefault(room.getId(), 0L).intValue();
 
             result.add(new MessageRoomListResponse(
                     room.getId(),
