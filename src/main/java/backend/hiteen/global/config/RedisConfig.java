@@ -9,18 +9,25 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
+import java.util.Map;
 
 @Configuration
 public class RedisConfig {
 
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
-        RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(10))
+        RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()));
 
+        Map<String, RedisCacheConfiguration> cacheConfigurations = Map.of(
+                "comments", defaultConfig.entryTtl(Duration.ofMinutes(10)),
+                "meal", defaultConfig.entryTtl(Duration.ofDays(1)),
+                "timetable", defaultConfig.entryTtl(Duration.ofDays(7))
+        );
+
         return RedisCacheManager.builder(connectionFactory)
-                .cacheDefaults(config)
+                .cacheDefaults(defaultConfig.entryTtl(Duration.ofMinutes(10)))
+                .withInitialCacheConfigurations(cacheConfigurations)
                 .build();
     }
 }
