@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -29,6 +30,7 @@ public class TimeTableService {
     @Value("${openapi.api-key}")
     private String apiKey;
 
+    @Cacheable(value = "timetable", key = "#officeCode + '_' + #schoolCode + '_' + #grade + '_' + #classNum + '_' + T(java.time.LocalDate).now().with(T(java.time.DayOfWeek).MONDAY)")
     public Map<String, List<TimeTableDto>> getTimeTable(
             String officeCode,
             String schoolCode,

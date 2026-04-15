@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -25,6 +26,7 @@ public class MealService {
     @Value("${openapi.api-key}")
     private String apiKey;
 
+    @Cacheable(value = "meal", key = "#officeCode + '_' + #schoolCode + '_' + #year + '_' + #month")
     public Map<String, Map<String, MealDto>> getSchoolMeal(String officeCode, String schoolCode, int year, int month)
     {
 
